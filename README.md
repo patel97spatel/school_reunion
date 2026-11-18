@@ -1,0 +1,66 @@
+# Golden Days Forever — School Friends Reunion
+
+A responsive HTML, CSS, JavaScript and Bootstrap reunion website. It has a “Friends Forever” banner carousel, a static reunion quote, a warm gradient theme, school details, supplied school-memory photos, a searchable friends directory, photo/video and happy-wall filters, a feast vote with voter names, reunion opinions, and a WhatsApp sharing link.
+
+## Try it
+
+Open `index.html` in a browser, or serve this folder with a static web server. The first run is **demo mode**: stock photos are placeholders, the friends list is empty, votes are saved only in that browser, and other submissions are not saved. Visitors do not share demo data. Clear the browser's site data to reset demo votes.
+
+## Make it yours
+
+Edit `assets/js/config.js`:
+
+- `school`, `location` and `batch`: your school names, location and batch details.
+- `owner`: your name, displayed beside the current year in the footer.
+- `whatsapp`: your WhatsApp number with country code and no `+`, spaces, or punctuation, e.g. `919876543210`. This example is not a real contact. The button opens WhatsApp with a message; visitors must attach files themselves. Without a number, the site displays a setup notice.
+- `apiUrl`: your deployed Google Apps Script web app URL, set up below.
+
+The feast menu includes rice, dal, chicken, mutton, paneer, mushroom, salad, dahi raita and tomato khatta. To change the choices, update **both** `menu` in `assets/js/app.js` and `MENU_ITEMS` in `google-apps-script/Code.gs`, then redeploy the script. Existing votes use the item IDs, so keep IDs stable when renaming choices. Votes for the previous example menu remain in the sheet but are no longer shown or counted. If you have already deployed the backend, update its code and deploy a new version before accepting votes for the new menu.
+
+The supplied school-memory photos are stored in `assets/images` and used in the banner, class cards, story section and demo memories. Replace them with photos you have permission to use by updating their image paths and `alt` text in `index.html` and the demo-memory URLs in `assets/js/app.js`. Banner `--hero-image` paths are relative to `assets/css/style.css`, so images in `assets/images` use `../images/`. Use images with permission from everyone pictured. Google Fonts and Bootstrap are loaded from CDNs; the custom CSS supplies the site's core styling.
+
+Banner photos are from Pexels, under the [Pexels license](https://www.pexels.com/license/):
+
+- [School friends](https://www.pexels.com/photo/happy-school-children-in-india-celebrating-together-40582287/) by Rohan Batra.
+- [Schoolyard play](https://www.pexels.com/photo/joyful-children-playing-outdoors-in-assam-schoolyard-37815945/) by Mangalam Bhargava.
+- [School cricket](https://www.pexels.com/photo/students-on-brown-field-near-fence-5909583/) by Plato Terentev.
+- [Children with a bicycle](https://www.pexels.com/photo/children-playing-with-bicycle-in-indian-village-30969804/) by Anil Sharma.
+
+The story gallery uses illustrative images, not actual photos of the school or its teachers. The school-ground, midday-meal and morning-prayer images were supplied by the site owner; confirm permission to use them and consent from the people pictured before publishing. The other photos are from Pexels:
+
+- [Classroom](https://www.pexels.com/photo/children-sitting-in-a-classroom-with-desks-and-chairs-18012456/) by Swastik Arora.
+- [Teacher and student](https://www.pexels.com/photo/teacher-writing-on-a-blackboard-beside-a-student-7521313/) by Pavel Danilyuk.
+
+## Free shared Google Sheets setup
+
+Google Sheets stores shared data and can be downloaded as an Excel workbook. A Google account is required for the organiser; no Google sign-in is required for visitors.
+
+1. Create a new Google Sheet. Keep it private; do **not** publish or share the spreadsheet publicly.
+2. In that sheet, open **Extensions → Apps Script**. Replace the default code with `google-apps-script/Code.gs` and save.
+3. Select `setupSheets` and run it once. Authorise the requested permissions for your own spreadsheet. This creates `Friends`, `Memories`, `Votes` and `Responses` tabs and records the spreadsheet ID for the web app. If a tab already exists with different headers, rename it first; setup does not overwrite existing data.
+4. Choose **Deploy → New deployment → Web app**. Set **Execute as: Me** and **Who has access: Anyone**. Deploy and copy the web app URL ending in `/exec`, not the `/dev` URL. Enter it as `apiUrl` in `assets/js/config.js`.
+5. Test using the hosted site: submit a response, cast a vote, and submit a message. Check the corresponding tabs. When editing Apps Script later, create a **new deployment version** via **Deploy → Manage deployments**, so the existing URL uses your updates.
+6. To export, open the spreadsheet and choose **File → Download → Microsoft Excel (.xlsx)**.
+
+If loading or submission fails, the site shows an error instead of switching to demo data. Check deployment access, the `/exec` URL, Google permissions and the Apps Script execution log. Apps Script and Google Sheets have free usage quotas and require internet access; the site does not provide unlimited storage or guaranteed availability.
+
+### Populate and moderate
+
+- **Friends:** add one row per friend: `name`, `then` (e.g. a nickname or school memory), `now` (e.g. city), `status`, `photo` (unused by the current table), and `approved` = `YES`. Only approved rows appear in the searchable table.
+- **Memories:** submitted happy-wall notes arrive with `approved` = `NO`. Review them, then set `approved` to `YES` to publish. To add media received on WhatsApp, add a row with `type` = `photo` or `video`, a title, name, message and public HTTPS `url`, and `approved` = `YES`. Photo URLs must point directly to an image. Videos open as links in a new tab; use a video host that allows your friends to view it. Files are **not** uploaded to the spreadsheet or automatically transferred from WhatsApp.
+- **Votes:** every vote and the name entered are public on the website. Votes are sorted by count; selecting a dish opens the list of names. There is no login or enforced one-vote-per-person limit. Anyone can submit duplicate votes or another name, so results are informal, not tamper-proof. Remove inappropriate rows from the sheet.
+- **Responses:** reunion interest and opinions stay in the private sheet; they are not returned by the public API.
+
+Only publish friends, names, photos and messages with the people involved's consent. The site and its public web app have no authentication, CAPTCHA or rate limiting: anyone with the URL can view published data and submit responses, and spam or quota exhaustion is possible. Review submissions regularly; don't collect sensitive information or use this setup for private or high-stakes voting.
+
+## Host for free
+
+Upload `index.html` and the complete `assets` folder to any static host, such as GitHub Pages, Netlify, or Cloudflare Pages. Configure the deployment's publish directory as the project root and visit the HTTPS URL. The `google-apps-script` folder is for setup and does not need to be published. Hosting and Google account terms, quotas and availability may change.
+
+## Files
+
+- `index.html` — page structure.
+- `assets/css/style.css` — responsive theme.
+- `assets/js/config.js` — school, copyright, WhatsApp and backend settings.
+- `assets/js/app.js` — carousel, directory, memories, voting and forms.
+- `google-apps-script/Code.gs` — Google Sheets backend.
