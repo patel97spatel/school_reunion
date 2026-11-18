@@ -13,7 +13,7 @@
     { id: "tomato-khatta", name: "Tomato khatta", emoji: "🍅" }
   ];
   const demo = !config.apiUrl;
-  const demoKey = "backbench-club-demo-v2";
+  const demoKey = "backbench-club-demo-v3";
   const sampleMemories = [
     { type: "photo", title: "The days we'll never forget", name: "The gang", message: "Here's to the people who made the ordinary days extraordinary.", url: "assets/images/friends-running.jpg" },
     { type: "photo", title: "Together is our favourite place", name: "The gang", message: "A little reminder to make time for the people who feel like home.", url: "assets/images/school-cricket.jpg" },
@@ -73,7 +73,16 @@
         { srNo: 25, name: "Nirmala", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 26, name: "Hemanta", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 27, name: "Sujit", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" }
+        { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 29, name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 30, name: "Tapa", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 31, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 32, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 33, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 34, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 35, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 36, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 37, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
       ];
       return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
