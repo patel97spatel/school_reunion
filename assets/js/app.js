@@ -76,13 +76,14 @@
         { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 29, name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 30, name: "Tapa", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 31, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 32, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 33, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 34, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 35, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 36, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 37, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
+        { srNo: 31, name: "Tribhuban", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 32, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 33, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 34, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 35, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 36, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 37, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 38, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
       ];
       return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
