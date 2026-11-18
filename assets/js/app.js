@@ -175,6 +175,126 @@
     $$(".slide-dot").forEach((dot, i) => { dot.classList.toggle("active", i === index); dot.setAttribute("aria-pressed", String(i === index)); });
   }
 
+  // Preferences Management
+  const prefKey = "reunion-preferences-v1";
+  let preferences = JSON.parse(localStorage.getItem(prefKey)) || {};
+
+  function getPreferences() {
+    return JSON.parse(localStorage.getItem(prefKey)) || {};
+  }
+
+  function savePreference(friendId, friendName, pref) {
+    preferences[friendId] = { name: friendName, preference: pref, timestamp: new Date().toISOString() };
+    localStorage.setItem(prefKey, JSON.stringify(preferences));
+  }
+
+  function renderPreferencesTable(filter = "all") {
+    const friendsList = window.FRIENDS_LIST || [];
+    const tbody = $("#preferences-table");
+    const prefs = getPreferences();
+    
+    let friends = friendsList.map(friend => ({
+      ...friend,
+      pref: prefs[friend.id]?.preference || null
+    }));
+
+    if (filter === "veg") friends = friends.filter(f => f.pref === "veg");
+    else if (filter === "nonveg") friends = friends.filter(f => f.pref === "nonveg");
+    else if (filter === "pending") friends = friends.filter(f => !f.pref);
+
+    friends.sort((a, b) => a.name.localeCompare(b.name));
+
+    tbody.innerHTML = friends.map(friend => {
+      let prefDisplay = '<span class="pref-pending">⏳ Not Selected</span>';
+      if (friend.pref === "veg") prefDisplay = '<span class="pref-veg">🥗 Vegetarian</span>';
+      else if (friend.pref === "nonveg") prefDisplay = '<span class="pref-nonveg">🍗 Non-Vegetarian</span>';
+      return `<tr><td>${escapeHtml(friend.name)}${friend.nickname ? ` (${friend.nickname})` : ""}</td><td>${prefDisplay}</td></tr>`;
+    }).join("");
+
+    if (friends.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="2">No friends in this category.</td></tr>`;
+    }
+  }
+
+  function updatePreferencesCounts() {
+    const prefs = getPreferences();
+    const vegCount = Object.values(prefs).filter(p => p.preference === "veg").length;
+    const nonvegCount = Object.values(prefs).filter(p => p.preference === "nonveg").length;
+    const total = vegCount + nonvegCount;
+
+    $("#veg-count").textContent = vegCount;
+    $("#nonveg-count").textContent = nonvegCount;
+    $("#total-count").textContent = total;
+  }
+
+  function initializePreferences() {
+    const friendsList = window.FRIENDS_LIST || [];
+    const friendSelect = $("#friend-select");
+
+    // Populate friend dropdown
+    friendsList.forEach(friend => {
+      const option = document.createElement("option");
+      option.value = friend.id;
+      option.textContent = friend.name + (friend.nickname ? ` (${friend.nickname})` : "");
+      friendSelect.appendChild(option);
+    });
+
+    // Handle preference button clicks
+    $$(".pref-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+        this.setAttribute("aria-pressed", "true");
+        $("#submit-pref").disabled = false;
+      });
+    });
+
+    // Handle friend selection
+    friendSelect.addEventListener("change", () => {
+      $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+      $("#submit-pref").disabled = true;
+      $("#pref-status").textContent = "";
+    });
+
+    // Submit preference
+    $("#submit-pref").addEventListener("click", () => {
+      const friendId = friendSelect.value;
+      const pref = $$(".pref-btn[aria-pressed='true']")[0]?.dataset.pref;
+
+      if (!friendId || !pref) {
+        $("#pref-status").textContent = "Please select a name and preference.";
+        return;
+      }
+
+      const friend = friendsList.find(f => f.id == friendId);
+      savePreference(friendId, friend.name, pref);
+      updatePreferencesCounts();
+      renderPreferencesTable("all");
+
+      // Reset form
+      friendSelect.value = "";
+      $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
+      $("#submit-pref").disabled = true;
+      $("#pref-status").textContent = `✓ ${friend.name}'s preference saved!`;
+      
+      setTimeout(() => {
+        $("#pref-status").textContent = "";
+      }, 3000);
+    });
+
+    // Filter buttons
+    $$(".preferences-tabs .filter-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        $$(".preferences-tabs .filter-btn").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        renderPreferencesTable(this.dataset.filter);
+      });
+    });
+
+    // Initial render
+    updatePreferencesCounts();
+    renderPreferencesTable("all");
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     $$("[data-setting]").forEach(element => { element.textContent = config[element.dataset.setting] || element.textContent; });
     $("#year").textContent = new Date().getFullYear();
@@ -202,6 +322,10 @@
     attachForm("#rsvp-form", "rsvp");
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
+    
+    // Initialize preferences functionality
+    initializePreferences();
+    
     loadData().catch(error => {
       $("#friends-table").innerHTML = '<tr><td colspan="4">Could not load the friends list.</td></tr>';
       $("#memories-grid").innerHTML = '<p class="empty-state">Could not load memories.</p>';
