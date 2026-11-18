@@ -151,7 +151,10 @@
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedFriends = friends.slice(startIndex, startIndex + itemsPerPage);
     
-    $("#friends-table").innerHTML = paginatedFriends.map((friend, index) => `<tr><td>${index + 1}</td><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`).join("") || `<tr><td colspan="3">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
+    $("#friends-table").innerHTML = paginatedFriends.map((friend, index) => {
+      const serNo = startIndex + index + 1;
+      return `<tr><td>${serNo}</td><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`;
+    }).join("") || `<tr><td colspan="3">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
     
     $("#page-info").textContent = `Page ${currentPage} of ${totalPages}`;
     $("#prev-page").disabled = currentPage === 1;
