@@ -18,7 +18,7 @@
       <a class="brand" href="#home" aria-label="Golden Days Forever home"><span class="brand-icon">✳</span><span>golden days<span class="brand-accent">forever.</span><small>FRIENDS FOREVER · REUNION 2026</small></span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
       <nav id="main-nav" class="main-nav" aria-label="Main navigation">
-        <a class="active" href="#home">Home</a><a href="#about">Our story</a><a href="#friends">Our classes</a><a href="#memories">Memory lane</a><a href="#vote">The feast</a><a href="#preferences">Preferences</a>
+        <a class="active" href="#home">Home</a><a href="#about">Our story</a><a href="#friends">Our classes</a><a href="#memories">Memory lane</a><a href="#vote">The feast</a>
         <a class="nav-cta" href="#rsvp">Count me in <span>↗</span></a>
       </nav>
     </div>
@@ -71,7 +71,7 @@
           <article class="friend-card"><img src="assets/images/school-cricket.jpg" alt="Friends playing cricket together" loading="lazy"><div class="friend-info"><div><h3>Class 10</h3><p>A chapter to remember</p></div><span>✳</span></div></article>
         </div>
         <p class="class-photo-note">A few snapshots from the school days we still talk about.</p>
-        <div class="directory"><div class="directory-top"><div><span class="mini-tag">THE CLASS LIST</span><h3>Find your people <span>✳</span></h3><p>Search the list and say hello to an old friend.</p></div><label class="search-box"><span>⌕</span><span class="visually-hidden">Search friends</span><input id="friend-search" type="search" placeholder="Search a name or city..."></label></div><div class="table-wrap"><table><thead><tr><th>FRIEND</th><th>THEN</th><th>NOW</th><th>STATUS</th></tr></thead><tbody id="friends-table"></tbody></table></div><p class="directory-foot"><span id="friend-count">0 friends</span><span>Made of good people & good memories ♡</span></p></div>
+        <div class="directory"><div class="directory-top"><div><span class="mini-tag">THE CLASS LIST</span><h3>Find your people <span>✳</span></h3><p>Search the list and say hello to an old friend.</p></div><label class="search-box"><span>⌕</span><span class="visually-hidden">Search friends</span><input id="friend-search" type="search" placeholder="Search a name..."></label></div><div class="table-wrap"><table><thead><tr><th>NAME</th><th>CONTACT</th></tr></thead><tbody id="friends-table"></tbody></table></div><div class="pagination-controls"><button class="pagination-btn" id="prev-page" type="button">← Previous</button><span id="page-info" class="page-info">Page 1</span><button class="pagination-btn" id="next-page" type="button">Next →</button></div><p class="directory-foot"><span id="friend-count">0 friends</span><span>Made of good people & good memories ♡</span></p></div>
       </div>
     </section>
 
@@ -92,48 +92,6 @@
       </div>
     </section>
 
-    <section id="preferences" class="section preferences-section">
-      <div class="container"><div class="section-label"><span>04B / DIETARY PREFERENCES</span><span>VEG OR NON-VEG?</span></div>
-        <div class="section-heading"><div><p class="kicker">PLAN THE PERFECT MEAL <span>✳</span></p><h2>What's your<br><span class="serif">preference?</span></h2><p class="section-copy">Help us plan the perfect feast. Select your name and choose veg or non-veg.</p></div></div>
-        <div class="preferences-form-container">
-          <div class="preferences-form">
-            <label>Select your name *
-              <select id="friend-select" required>
-                <option value="">Choose your name...</option>
-              </select>
-            </label>
-            <div class="preference-buttons">
-              <button type="button" class="pref-btn" data-pref="veg" aria-pressed="false">🥗 Vegetarian</button>
-              <button type="button" class="pref-btn" data-pref="nonveg" aria-pressed="false">🍗 Non-Vegetarian</button>
-            </div>
-            <button type="button" id="submit-pref" class="button button-dark" disabled>Submit Preference</button>
-            <p class="form-status" id="pref-status" role="status" aria-live="polite"></p>
-          </div>
-        </div>
-        <div class="preferences-summary">
-          <div class="summary-card">
-            <div class="summary-stat"><span class="stat-number" id="veg-count">0</span><span class="stat-label">Vegetarian</span></div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-stat"><span class="stat-number" id="nonveg-count">0</span><span class="stat-label">Non-Vegetarian</span></div>
-          </div>
-          <div class="summary-card">
-            <div class="summary-stat"><span class="stat-number" id="total-count">0</span><span class="stat-label">Total Responses</span></div>
-          </div>
-        </div>
-        <div class="preferences-table-container">
-          <h3>Who chose what? <span>✳</span></h3>
-          <div class="preferences-tabs" role="group">
-            <button class="filter-btn active" type="button" data-filter="all">All Friends</button>
-            <button class="filter-btn" type="button" data-filter="veg">🥗 Vegetarian</button>
-            <button class="filter-btn" type="button" data-filter="nonveg">🍗 Non-Vegetarian</button>
-            <button class="filter-btn" type="button" data-filter="pending">⏳ Not Selected</button>
-          </div>
-          <div class="table-wrap"><table><thead><tr><th>FRIEND NAME</th><th>PREFERENCE</th></tr></thead><tbody id="preferences-table"></tbody></table></div>
-        </div>
-      </div>
-    </section>
-
     <section id="rsvp" class="section rsvp-section">
       <div class="container"><div class="section-label"><span>05 / LET'S MAKE IT HAPPEN</span><span>WE SAVED YOU A SEAT</span></div>
         <div class="rsvp-grid"><div><p class="kicker">THE MORE THE MERRIER <span>✳</span></p><h2>It's not a reunion<br><span class="serif">without you.</span></h2><p class="section-copy">Ready to make more memories? Tell us if you're interested and share your ideas for the big day.</p><div class="rsvp-note"><span>♡</span><div><strong>Got an idea? We're all ears.</strong><br>Dates, places, activities, or that one story we absolutely have to retell.</div></div></div>
@@ -147,7 +105,6 @@
   <dialog id="story-modal" class="modal-dialog-custom"><div class="modal-content-custom"><button class="close-modal" type="button" aria-label="Close dialog">×</button><p class="kicker">PASS THE GOOD TIMES ON <span>✳</span></p><h3>Share a little memory.</h3><p>Write a story, a happy thought, or a bit of motivation. The organiser will review it before it appears.</p><form id="story-form"><label>Your name *<input name="name" required maxlength="80" placeholder="Your name"></label><label>Your memory or message *<textarea name="message" required rows="4" maxlength="1000" placeholder="Remember that time..."></textarea></label><p class="privacy-note">Approved messages and your name are visible to visitors. Please respect everyone's privacy.</p><button class="button button-dark full-width" type="submit">Send for review <span>↗</span></button><p class="form-status" role="status" aria-live="polite"></p></form></div></dialog>
   <div id="notice" class="notice" role="status" aria-live="polite"></div>
   <script src="assets/js/config.js"></script>
-  <script src="assets/js/friends.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>

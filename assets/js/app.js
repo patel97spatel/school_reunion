@@ -22,6 +22,8 @@
   let data = { friends: [], memories: [], votes: [] };
   let activeFilter = "all";
   let selectedSlide = 0;
+  let currentPage = 1;
+  const itemsPerPage = 10;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   const escapeHtml = value => String(value == null ? "" : value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
@@ -42,10 +44,23 @@
 
   function getDemoData() {
     const saved = localStorage.getItem(demoKey);
-    if (!saved) return { friends: [], memories: sampleMemories, votes: [] };
+    if (!saved) {
+      const defaultFriends = [
+        { name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Parbati", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Priti", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
+        { name: "Tapa", contact: "+91 XXX-XXX-XXXX" }
+      ];
+      return { friends: defaultFriends, memories: sampleMemories, votes: [] };
+    }
     const parsed = JSON.parse(saved);
     if (!Array.isArray(parsed.votes) || !Array.isArray(parsed.memories)) throw new Error("Demo data is invalid.");
-    return { friends: [], memories: parsed.memories, votes: parsed.votes };
+    return { friends: parsed.friends || [], memories: parsed.memories, votes: parsed.votes };
   }
 
   async function request(payload) {
@@ -94,8 +109,26 @@
 
   function renderTable() {
     const query = $("#friend-search").value.trim().toLowerCase();
-    const friends = data.friends.filter(friend => [friend.name, friend.then, friend.now, friend.status].some(value => String(value || "").toLowerCase().includes(query)));
-    $("#friends-table").innerHTML = friends.map(friend => `<tr><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.then || "—")}</td><td>${escapeHtml(friend.now || "—")}</td><td><span class="status-pill">${escapeHtml(friend.status || "Classmate")}</span></td></tr>`).join("") || `<tr><td colspan="4">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
+    let friends = data.friends.filter(friend => [friend.name, friend.contact].some(value => String(value || "").toLowerCase().includes(query)));
+    
+    friends.sort((a, b) => {
+      const nameA = String(a.name || "").toUpperCase();
+      const nameB = String(b.name || "").toUpperCase();
+      return nameA.localeCompare(nameB);
+    });
+    
+    const totalPages = Math.ceil(friends.length / itemsPerPage) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedFriends = friends.slice(startIndex, startIndex + itemsPerPage);
+    
+    $("#friends-table").innerHTML = paginatedFriends.map(friend => `<tr><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`).join("") || `<tr><td colspan="2">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
+    
+    $("#page-info").textContent = `Page ${currentPage} of ${totalPages}`;
+    $("#prev-page").disabled = currentPage === 1;
+    $("#next-page").disabled = currentPage === totalPages;
+    
     $("#friend-count").textContent = `${friends.length} ${friends.length === 1 ? "friend" : "friends"}${query ? " found" : ""}`;
   }
 
@@ -175,126 +208,6 @@
     $$(".slide-dot").forEach((dot, i) => { dot.classList.toggle("active", i === index); dot.setAttribute("aria-pressed", String(i === index)); });
   }
 
-  // Preferences Management
-  const prefKey = "reunion-preferences-v1";
-  let preferences = JSON.parse(localStorage.getItem(prefKey)) || {};
-
-  function getPreferences() {
-    return JSON.parse(localStorage.getItem(prefKey)) || {};
-  }
-
-  function savePreference(friendId, friendName, pref) {
-    preferences[friendId] = { name: friendName, preference: pref, timestamp: new Date().toISOString() };
-    localStorage.setItem(prefKey, JSON.stringify(preferences));
-  }
-
-  function renderPreferencesTable(filter = "all") {
-    const friendsList = window.FRIENDS_LIST || [];
-    const tbody = $("#preferences-table");
-    const prefs = getPreferences();
-    
-    let friends = friendsList.map(friend => ({
-      ...friend,
-      pref: prefs[friend.id]?.preference || null
-    }));
-
-    if (filter === "veg") friends = friends.filter(f => f.pref === "veg");
-    else if (filter === "nonveg") friends = friends.filter(f => f.pref === "nonveg");
-    else if (filter === "pending") friends = friends.filter(f => !f.pref);
-
-    friends.sort((a, b) => a.name.localeCompare(b.name));
-
-    tbody.innerHTML = friends.map(friend => {
-      let prefDisplay = '<span class="pref-pending">⏳ Not Selected</span>';
-      if (friend.pref === "veg") prefDisplay = '<span class="pref-veg">🥗 Vegetarian</span>';
-      else if (friend.pref === "nonveg") prefDisplay = '<span class="pref-nonveg">🍗 Non-Vegetarian</span>';
-      return `<tr><td>${escapeHtml(friend.name)}${friend.nickname ? ` (${friend.nickname})` : ""}</td><td>${prefDisplay}</td></tr>`;
-    }).join("");
-
-    if (friends.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="2">No friends in this category.</td></tr>`;
-    }
-  }
-
-  function updatePreferencesCounts() {
-    const prefs = getPreferences();
-    const vegCount = Object.values(prefs).filter(p => p.preference === "veg").length;
-    const nonvegCount = Object.values(prefs).filter(p => p.preference === "nonveg").length;
-    const total = vegCount + nonvegCount;
-
-    $("#veg-count").textContent = vegCount;
-    $("#nonveg-count").textContent = nonvegCount;
-    $("#total-count").textContent = total;
-  }
-
-  function initializePreferences() {
-    const friendsList = window.FRIENDS_LIST || [];
-    const friendSelect = $("#friend-select");
-
-    // Populate friend dropdown
-    friendsList.forEach(friend => {
-      const option = document.createElement("option");
-      option.value = friend.id;
-      option.textContent = friend.name + (friend.nickname ? ` (${friend.nickname})` : "");
-      friendSelect.appendChild(option);
-    });
-
-    // Handle preference button clicks
-    $$(".pref-btn").forEach(btn => {
-      btn.addEventListener("click", function() {
-        $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
-        this.setAttribute("aria-pressed", "true");
-        $("#submit-pref").disabled = false;
-      });
-    });
-
-    // Handle friend selection
-    friendSelect.addEventListener("change", () => {
-      $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
-      $("#submit-pref").disabled = true;
-      $("#pref-status").textContent = "";
-    });
-
-    // Submit preference
-    $("#submit-pref").addEventListener("click", () => {
-      const friendId = friendSelect.value;
-      const pref = $$(".pref-btn[aria-pressed='true']")[0]?.dataset.pref;
-
-      if (!friendId || !pref) {
-        $("#pref-status").textContent = "Please select a name and preference.";
-        return;
-      }
-
-      const friend = friendsList.find(f => f.id == friendId);
-      savePreference(friendId, friend.name, pref);
-      updatePreferencesCounts();
-      renderPreferencesTable("all");
-
-      // Reset form
-      friendSelect.value = "";
-      $$(".pref-btn").forEach(b => b.setAttribute("aria-pressed", "false"));
-      $("#submit-pref").disabled = true;
-      $("#pref-status").textContent = `✓ ${friend.name}'s preference saved!`;
-      
-      setTimeout(() => {
-        $("#pref-status").textContent = "";
-      }, 3000);
-    });
-
-    // Filter buttons
-    $$(".preferences-tabs .filter-btn").forEach(btn => {
-      btn.addEventListener("click", function() {
-        $$(".preferences-tabs .filter-btn").forEach(b => b.classList.remove("active"));
-        this.classList.add("active");
-        renderPreferencesTable(this.dataset.filter);
-      });
-    });
-
-    // Initial render
-    updatePreferencesCounts();
-    renderPreferencesTable("all");
-  }
-
   document.addEventListener("DOMContentLoaded", () => {
     $$("[data-setting]").forEach(element => { element.textContent = config[element.dataset.setting] || element.textContent; });
     $("#year").textContent = new Date().getFullYear();
@@ -308,7 +221,20 @@
       const slideCount = $$(".hero-slide").length;
       setInterval(() => showSlide((selectedSlide + 1) % slideCount), 6500);
     }
-    $("#friend-search").addEventListener("input", renderTable);
+    $("#friend-search").addEventListener("input", () => {
+      currentPage = 1;
+      renderTable();
+    });
+    $("#prev-page").addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+    $("#next-page").addEventListener("click", () => {
+      currentPage++;
+      renderTable();
+    });
     $$(".filter-btn").forEach(button => button.addEventListener("click", () => {
       activeFilter = button.dataset.filter;
       $$(".filter-btn").forEach(entry => entry.classList.toggle("active", entry === button));
@@ -323,11 +249,8 @@
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
     
-    // Initialize preferences functionality
-    initializePreferences();
-    
     loadData().catch(error => {
-      $("#friends-table").innerHTML = '<tr><td colspan="4">Could not load the friends list.</td></tr>';
+      $("#friends-table").innerHTML = '<tr><td colspan="2">Could not load the friends list.</td></tr>';
       $("#memories-grid").innerHTML = '<p class="empty-state">Could not load memories.</p>';
       $("#vote-grid").innerHTML = '<p class="empty-state">Could not load voting results.</p>';
       notify(`Could not load reunion data: ${error.message}`);
