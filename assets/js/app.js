@@ -46,15 +46,34 @@
     const saved = localStorage.getItem(demoKey);
     if (!saved) {
       const defaultFriends = [
-        { name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Parbati", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Priti", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
-        { name: "Tapa", contact: "+91 XXX-XXX-XXXX" }
+        { srNo: 1, name: "Akash", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 2, name: "Dilip", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 3, name: "Debashish (1)", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 4, name: "Madan", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 5, name: "Biki", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 6, name: "Aloka", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 7, name: "Sashika", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 8, name: "Biku", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 9, name: "Dharmananda", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 10, name: "Rohita", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 11, name: "Bulu", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 12, name: "Jenamani", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 13, name: "Debashish (2)", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 14, name: "Tilu", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 15, name: "Dola", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 16, name: "Parkhita", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 17, name: "Biren", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 18, name: "Deepak", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 19, name: "Kunta", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 20, name: "Anil", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 21, name: "Ghana", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 22, name: "Akash (2)", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 23, name: "Sunil Kharsel", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 24, name: "Naren", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 25, name: "Nirmala", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 26, name: "Hemanta", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 27, name: "Sujit", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" }
       ];
       return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
@@ -123,7 +142,7 @@
     const startIndex = (currentPage - 1) * itemsPerPage;
     const paginatedFriends = friends.slice(startIndex, startIndex + itemsPerPage);
     
-    $("#friends-table").innerHTML = paginatedFriends.map(friend => `<tr><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`).join("") || `<tr><td colspan="2">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
+    $("#friends-table").innerHTML = paginatedFriends.map(friend => `<tr><td>${friend.srNo || "—"}</td><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`).join("") || `<tr><td colspan="3">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
     
     $("#page-info").textContent = `Page ${currentPage} of ${totalPages}`;
     $("#prev-page").disabled = currentPage === 1;
@@ -250,7 +269,7 @@
     attachForm("#vote-form", "vote");
     
     loadData().catch(error => {
-      $("#friends-table").innerHTML = '<tr><td colspan="2">Could not load the friends list.</td></tr>';
+      $("#friends-table").innerHTML = '<tr><td colspan="3">Could not load the friends list.</td></tr>';
       $("#memories-grid").innerHTML = '<p class="empty-state">Could not load memories.</p>';
       $("#vote-grid").innerHTML = '<p class="empty-state">Could not load voting results.</p>';
       notify(`Could not load reunion data: ${error.message}`);
