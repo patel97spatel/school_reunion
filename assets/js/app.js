@@ -13,7 +13,7 @@
     { id: "tomato-khatta", name: "Tomato khatta", emoji: "🍅" }
   ];
   const demo = !config.apiUrl;
-  const demoKey = "backbench-club-demo-v3";
+  const demoKey = "backbench-club-demo-v4";
   const sampleMemories = [
     { type: "photo", title: "The days we'll never forget", name: "The gang", message: "Here's to the people who made the ordinary days extraordinary.", url: "assets/images/friends-running.jpg" },
     { type: "photo", title: "Together is our favourite place", name: "The gang", message: "A little reminder to make time for the people who feel like home.", url: "assets/images/school-cricket.jpg" },
