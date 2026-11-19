@@ -3,7 +3,7 @@ window.REUNION_CONFIG = {
   school: "Maa Chaurasi High School & Kharsal U.G.U.P. School",
   location: "Kharsal, Bhatli, Bargarh, Odisha",
   batch: "Our unforgettable batch",
-  owner: "Your Name",
-  whatsapp: "",
+  owner: "Sanjay.dev",
+  whatsapp: "918658102608",
   apiUrl: ""
 };
