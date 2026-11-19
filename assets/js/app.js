@@ -19,6 +19,32 @@
     { id: "chaulbar", name: "Chaulbar", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
     { id: "mudhi-mixture", name: "Jhal Mudhi", image: "assets/images/feast-jhal-mudhi.jpeg", imageAlt: "A bowl of Jhal Mudhi with vegetables and peanuts" }
   ];
+  const friendAvatarPhotos = {
+    boys: [
+      "assets/images/friend-avatar-boy-1.jpeg",
+      "assets/images/friend-avatar-boy-2.jpeg",
+      "assets/images/friend-avatar-boy-3.png",
+      "assets/images/friend-avatar-boy-4.png"
+    ],
+    girls: [
+      "assets/images/friend-avatar-girl-1.png",
+      "assets/images/friend-avatar-girl-2.jpeg",
+      "assets/images/friend-avatar-girl-3.jpeg",
+      "assets/images/friend-avatar-girl-4.jpeg"
+    ]
+  };
+  const girlFriendNames = new Set(["Jyoti", "Nandini", "Nandini II", "Niladri", "Parbati", "Priti", "Rukmini", "Sasmita", "Tapa"].map(name => name.toLowerCase()));
+  const legacyFriendNames = {
+    "akash khamari": "Akash II",
+    "akash (2)": "Akash II",
+    "akash(2)": "Akash II",
+    "akask(2)": "Akash II",
+    "debashis (1)": "Debashis - I",
+    "debashish (1)": "Debashis - I",
+    "debashish(1)": "Debashis - I",
+    "debashish (2)": "Debashish II",
+    "nandini jal": "Nandini II"
+  };
   const demo = !config.apiUrl;
   const demoKey = "backbench-club-demo-v5";
   const sampleMemories = [
@@ -41,6 +67,16 @@
       return url.protocol === "https:" ? url.href : "";
     } catch { return ""; }
   };
+  const friendName = value => {
+    const name = String(value || "Friend").trim().replace(/\s+/g, " ");
+    return legacyFriendNames[name.toLowerCase()] || name;
+  };
+  const friendAvatarPhoto = name => {
+    let hash = 0;
+    for (let index = 0; index < name.length; index++) hash = (hash * 31 + name.charCodeAt(index)) >>> 0;
+    const group = girlFriendNames.has(name.toLowerCase()) ? friendAvatarPhotos.girls : friendAvatarPhotos.boys;
+    return group[hash % group.length];
+  };
   const notify = message => {
     const notice = $("#notice");
     notice.textContent = message;
@@ -53,43 +89,44 @@
     const saved = localStorage.getItem(demoKey);
     if (!saved) {
       const defaultFriends = [
-        { srNo: 1, name: "Akash", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 2, name: "Dilip", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 3, name: "Debashish (1)", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 4, name: "Madan", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 5, name: "Biki", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 6, name: "Aloka", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 7, name: "Sashika", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 8, name: "Biku", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 9, name: "Dharmananda", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 10, name: "Rohita", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 11, name: "Bulu", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 12, name: "Jenamani", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 13, name: "Debashish (2)", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 14, name: "Tilu", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 15, name: "Dola", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 16, name: "Parkhita", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 17, name: "Biren", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 18, name: "Deepak", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 19, name: "Kunta", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 20, name: "Anil", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 21, name: "Ghana", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 22, name: "Akash (2)", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 23, name: "Sunil Kharsel", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 24, name: "Naren", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 25, name: "Nirmala", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 26, name: "Hemanta", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 27, name: "Sujit", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 29, name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 30, name: "Tapa", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 31, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 32, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 33, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 34, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 35, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 36, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 37, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
+        { srNo: 1, name: "Akash" },
+        { srNo: 2, name: "Dilip" },
+        { srNo: 3, name: "Debashis - I" },
+        { srNo: 4, name: "Madan" },
+        { srNo: 5, name: "Biki" },
+        { srNo: 6, name: "Aloka" },
+        { srNo: 7, name: "Sashika" },
+        { srNo: 8, name: "Biku" },
+        { srNo: 9, name: "Dharmananda" },
+        { srNo: 10, name: "Rohita" },
+        { srNo: 11, name: "Bulu" },
+        { srNo: 12, name: "Jenamani" },
+        { srNo: 13, name: "Debashish II" },
+        { srNo: 14, name: "Tilu" },
+        { srNo: 15, name: "Dola" },
+        { srNo: 16, name: "Parkhita" },
+        { srNo: 17, name: "Biren" },
+        { srNo: 18, name: "Deepak" },
+        { srNo: 19, name: "Kunta" },
+        { srNo: 20, name: "Anil" },
+        { srNo: 21, name: "Ghana" },
+        { srNo: 22, name: "Akash II" },
+        { srNo: 23, name: "Sunil Kharsel" },
+        { srNo: 24, name: "Naren" },
+        { srNo: 25, name: "Nirmala" },
+        { srNo: 26, name: "Hemanta" },
+        { srNo: 27, name: "Sujit" },
+        { srNo: 28, name: "Bikash" },
+        { srNo: 29, name: "Niladri" },
+        { srNo: 30, name: "Tapa" },
+        { srNo: 31, name: "Nandini" },
+        { srNo: 32, name: "Jyoti" },
+        { srNo: 33, name: "Sasmita" },
+        { srNo: 34, name: "Priti" },
+        { srNo: 35, name: "Nandini II" },
+        { srNo: 36, name: "Rukmini" },
+        { srNo: 37, name: "Parbati" },
+        { srNo: 38, name: "Tribhuban" }
       ];
       return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
@@ -144,7 +181,8 @@
 
   function renderTable() {
     const query = $("#friend-search").value.trim().toLowerCase();
-    let friends = data.friends.filter(friend => [friend.name, friend.contact].some(value => String(value || "").toLowerCase().includes(query)));
+    let friends = data.friends.map(friend => ({ ...friend, name: friendName(friend.name) }))
+      .filter(friend => String(friend.name || "").toLowerCase().includes(query));
     
     friends.sort((a, b) => {
       const nameA = String(a.name || "").toUpperCase();
@@ -160,8 +198,23 @@
     
     $("#friends-table").innerHTML = paginatedFriends.map((friend, index) => {
       const serNo = startIndex + index + 1;
-      return `<tr><td>${serNo}</td><td>${escapeHtml(friend.name)}</td><td>${escapeHtml(friend.contact || "—")}</td></tr>`;
+      const name = String(friend.name || "Friend");
+      const initials = name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(part => part.charAt(0)).join("").toUpperCase() || "?";
+      const photo = safeUrl(String(friend.photo || "")) || friendAvatarPhoto(name);
+      const avatar = photo
+        ? `<img class="friend-avatar friend-avatar-photo" src="${escapeHtml(photo)}" alt="" data-initials="${escapeHtml(initials)}" loading="lazy">`
+        : `<span class="friend-avatar friend-avatar-placeholder" aria-hidden="true">${escapeHtml(initials)}</span>`;
+      return `<tr><td>${serNo}</td><td>${avatar}</td><td>${escapeHtml(name)}</td></tr>`;
     }).join("") || `<tr><td colspan="3">${query ? "No friends found." : "No friends have been added yet."}</td></tr>`;
+    $$(".friend-avatar-photo", $("#friends-table")).forEach(image => {
+      image.addEventListener("error", () => {
+        const fallback = document.createElement("span");
+        fallback.className = "friend-avatar friend-avatar-placeholder";
+        fallback.setAttribute("aria-hidden", "true");
+        fallback.textContent = image.dataset.initials;
+        image.replaceWith(fallback);
+      }, { once: true });
+    });
     
     $("#page-info").textContent = `Page ${currentPage} of ${totalPages}`;
     $("#prev-page").disabled = currentPage === 1;
