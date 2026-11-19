@@ -2,15 +2,15 @@
   "use strict";
   const config = window.REUNION_CONFIG;
   const menu = [
-    { id: "rice", name: "Rice", emoji: "🍚" },
-    { id: "dal", name: "Dal", emoji: "🥣" },
-    { id: "chicken", name: "Chicken", emoji: "🍗" },
-    { id: "mutton", name: "Mutton", emoji: "🍲" },
-    { id: "paneer", name: "Paneer", emoji: "🍛" },
-    { id: "mushroom", name: "Mushroom", emoji: "🍄" },
-    { id: "salad", name: "Salad", emoji: "🥗" },
-    { id: "dahi-raita", name: "Dahi raita", emoji: "🥛" },
-    { id: "tomato-khatta", name: "Tomato khatta", emoji: "🍅" }
+    { id: "rice", name: "Rice", image: "assets/images/feast-rice.jpeg", imageAlt: "A bowl of coconut jasmine rice with fresh herbs" },
+    { id: "dal", name: "Dal", image: "assets/images/feast-moong-dal.jpeg", imageAlt: "Yellow moong dal tadka served in a bowl" },
+    { id: "chicken", name: "Chicken", image: "assets/images/feast-malwani-chicken.jpeg", imageAlt: "Malwani chicken curry garnished with fresh herbs" },
+    { id: "mutton", name: "Mutton", image: "assets/images/feast-mutton-curry.jpeg", imageAlt: "Spicy mutton curry served in a metal bowl" },
+    { id: "paneer", name: "Paneer", image: "assets/images/feast-paneer-curry.jpeg", imageAlt: "Paneer curry garnished with fresh herbs" },
+    { id: "mushroom", name: "Mushroom", image: "assets/images/feast-mushroom.jpeg", imageAlt: "Roasted mushrooms with herbs in a pan" },
+    { id: "salad", name: "Salad", image: "assets/images/feast-salad.jpeg", imageAlt: "Fresh salad with cucumber, tomato and onion" },
+    { id: "dahi-raita", name: "Dahi raita", image: "assets/images/feast-raita.jpeg", imageAlt: "A bowl of cucumber raita" },
+    { id: "tomato-khatta", name: "Tomato khatta", image: "assets/images/feast-tomato.jpeg", imageAlt: "A bowl of tomato sauce with herbs" }
   ];
   const demo = !config.apiUrl;
   const demoKey = "backbench-club-demo-v5";
@@ -76,14 +76,13 @@
         { srNo: 28, name: "Bikash", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 29, name: "Niladri", contact: "+91 XXX-XXX-XXXX" },
         { srNo: 30, name: "Tapa", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 31, name: "Tribhuban", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 32, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 33, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 34, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 35, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 36, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 37, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
-        { srNo: 38, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
+        { srNo: 31, name: "Nandini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 32, name: "Jyoti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 33, name: "Sasmita", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 34, name: "Priti", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 35, name: "Nandini Jal", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 36, name: "Rukmini", contact: "+91 XXX-XXX-XXXX" },
+        { srNo: 37, name: "Parbati", contact: "+91 XXX-XXX-XXXX" }
       ];
       return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
@@ -177,7 +176,7 @@
 
   function renderVotes() {
     const ranked = menu.map(item => ({ ...item, count: data.votes.filter(vote => vote.item === item.id).length })).sort((a, b) => b.count - a.count);
-    $("#vote-grid").innerHTML = ranked.map((item, index) => `<article class="vote-card"><div class="vote-top"><span class="vote-emoji" aria-hidden="true">${item.emoji}</span><span class="vote-rank">${item.count ? `#${index + 1} MOST LOVED` : "ON THE MENU"}</span></div><h3>${item.name}</h3><p>${item.count} ${item.count === 1 ? "vote" : "votes"}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></article>`).join("");
+    $("#vote-grid").innerHTML = ranked.map((item, index) => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-top"><span class="vote-rank">${item.count ? `#${index + 1} MOST LOVED` : "ON THE MENU"}</span></div><h3>${item.name}</h3><p>${item.count} ${item.count === 1 ? "vote" : "votes"}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
   }
 
   function showVotes(id) {
