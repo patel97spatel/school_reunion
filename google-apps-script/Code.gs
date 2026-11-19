@@ -8,7 +8,7 @@ const HEADERS = {
   Votes: ["item", "name", "submittedAt"],
   Responses: ["name", "city", "interest", "opinion", "submittedAt"]
 };
-const MENU_ITEMS = ["rice", "dal", "chicken", "mutton", "paneer", "mushroom", "salad", "dahi-raita", "tomato-khatta"];
+const MENU_ITEMS = ["rice", "dal", "chicken", "mutton", "paneer", "mushroom", "salad", "dahi-raita", "tomato-khatta", "papad", "pakhalbhat", "patal-puda", "alu-puda", "tea", "chaulbar", "mudhi-mixture"];
 
 function setupSheets() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();

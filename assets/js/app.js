@@ -10,7 +10,14 @@
     { id: "mushroom", name: "Mushroom", image: "assets/images/feast-mushroom.jpeg", imageAlt: "Roasted mushrooms with herbs in a pan" },
     { id: "salad", name: "Salad", image: "assets/images/feast-salad.jpeg", imageAlt: "Fresh salad with cucumber, tomato and onion" },
     { id: "dahi-raita", name: "Dahi raita", image: "assets/images/feast-raita.jpeg", imageAlt: "A bowl of cucumber raita" },
-    { id: "tomato-khatta", name: "Tomato khatta", image: "assets/images/feast-tomato.jpeg", imageAlt: "A bowl of tomato sauce with herbs" }
+    { id: "tomato-khatta", name: "Tomato khatta", image: "assets/images/feast-tomato.jpeg", imageAlt: "A bowl of tomato sauce with herbs" },
+    { id: "papad", name: "Papad", image: "assets/images/feast-papad.jpeg", imageAlt: "A stack of crisp papad" },
+    { id: "pakhalbhat", name: "Pakhalbhat", image: "assets/images/feast-pakhal-bhat.jpeg", imageAlt: "A traditional Odia meal served with dahi pakhala" },
+    { id: "patal-puda", name: "Tomato puda", image: "assets/images/feast-tomato-puda.jpeg", imageAlt: "Tomatoes roasted over hot coals" },
+    { id: "alu-puda", name: "Alu puda", image: "assets/images/feast-alu-puda.jpeg", imageAlt: "Potatoes roasting in hot coals" },
+    { id: "tea", name: "Tea", image: "assets/images/feast-tea.jpeg", imageAlt: "Two glasses of hot tea" },
+    { id: "chaulbar", name: "Chaulbar", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
+    { id: "mudhi-mixture", name: "Jhal Mudhi", image: "assets/images/feast-jhal-mudhi.jpeg", imageAlt: "A bowl of Jhal Mudhi with vegetables and peanuts" }
   ];
   const demo = !config.apiUrl;
   const demoKey = "backbench-club-demo-v5";
@@ -176,7 +183,7 @@
 
   function renderVotes() {
     const ranked = menu.map(item => ({ ...item, count: data.votes.filter(vote => vote.item === item.id).length })).sort((a, b) => b.count - a.count);
-    $("#vote-grid").innerHTML = ranked.map((item, index) => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-top"><span class="vote-rank">${item.count ? `#${index + 1} MOST LOVED` : "ON THE MENU"}</span></div><h3>${item.name}</h3><p>${item.count} ${item.count === 1 ? "vote" : "votes"}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
+    $("#vote-grid").innerHTML = ranked.map(item => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-title-line"><h3>${escapeHtml(item.name)}</h3><span class="vote-leader" aria-hidden="true"></span><span class="vote-count">${item.count} ${item.count === 1 ? "vote" : "votes"}</span></div><p>${escapeHtml(item.description || item.imageAlt || `A favourite for the reunion feast.`)}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
   }
 
   function showVotes(id) {
