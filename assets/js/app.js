@@ -52,7 +52,8 @@
     { type: "photo", title: "Together is our favourite place", name: "The gang", message: "A little reminder to make time for the people who feel like home.", url: "assets/images/school-cricket.jpg" },
     { type: "note", title: "A note to the old gang", name: "The happy wall", message: "No matter how much time passes, good friends always pick up right where they left off.", url: "" }
   ];
-  let data = { friends: [], memories: [], votes: [] };
+  let data = { friends: [], memories: [], votes: [], preferences: null };
+  let preferenceSubmitting = false;
   let activeFilter = "all";
   let selectedSlide = 0;
   let currentPage = 1;
@@ -123,8 +124,7 @@
 
   function getDemoData() {
     const saved = localStorage.getItem(demoKey);
-    if (!saved) {
-      const defaultFriends = [
+    const defaultFriends = [
         { srNo: 1, name: "Akash" },
         { srNo: 2, name: "Dilip" },
         { srNo: 3, name: "Debashis - I" },
@@ -163,12 +163,32 @@
         { srNo: 36, name: "Rukmini" },
         { srNo: 37, name: "Parbati" },
         { srNo: 38, name: "Tribhuban" }
-      ];
-      return { friends: defaultFriends, memories: sampleMemories, votes: [] };
-    }
+    ];
+    if (!saved) return { friends: defaultFriends, memories: sampleMemories, votes: [], preferences: { veg: 0, nonVeg: 0 } };
     const parsed = JSON.parse(saved);
     if (!Array.isArray(parsed.votes) || !Array.isArray(parsed.memories)) throw new Error("Demo data is invalid.");
-    return { friends: parsed.friends || [], memories: parsed.memories, votes: parsed.votes };
+    const preferences = parsed.preferences === undefined ? { veg: 0, nonVeg: 0 } : parsed.preferences;
+    if (!validPreferences(preferences)) throw new Error("Demo preference counts are invalid.");
+    return { friends: parsed.friends || defaultFriends, memories: parsed.memories, votes: parsed.votes, preferences };
+  }
+
+  function validPreferences(counts) {
+    return counts && Number.isSafeInteger(counts.veg) && counts.veg >= 0 &&
+      Number.isSafeInteger(counts.nonVeg) && counts.nonVeg >= 0;
+  }
+
+  function renderPreferences() {
+    const counts = data.preferences;
+    $("#veg-count").textContent = counts ? counts.veg : "—";
+    $("#non-veg-count").textContent = counts ? counts.nonVeg : "—";
+    $("#food-preference-note").textContent = counts
+      ? (demo ? "Demo only: counts are saved in this browser and are not shared." : "Counts are shared with all visitors.")
+      : "Food preferences are unavailable. The organiser must update the spreadsheet setup.";
+    $('#food-preference-form button[type="submit"]').disabled = !counts || preferenceSubmitting;
+  }
+
+  function saveDemoData() {
+    localStorage.setItem(demoKey, JSON.stringify(data));
   }
 
   async function request(payload) {
@@ -180,7 +200,7 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload),
         signal: controller.signal
-      } : { signal: controller.signal });
+      } : { signal: controller.signal, cache: "no-store" });
       if (!response.ok) throw new Error(`Server returned ${response.status}.`);
       const result = await response.json();
       if (!result.ok) throw new Error(result.error || "The server could not process your request.");
@@ -197,22 +217,72 @@
     } else {
       const result = await request();
       if (!Array.isArray(result.friends) || !Array.isArray(result.memories) || !Array.isArray(result.votes)) throw new Error("The server returned an invalid response.");
-      data = { friends: result.friends, memories: result.memories, votes: result.votes };
+      if (result.preferences != null && !validPreferences(result.preferences)) throw new Error("The server returned invalid preference counts.");
+      data = { friends: result.friends, memories: result.memories, votes: result.votes, preferences: result.preferences || null };
     }
     renderTable();
     renderMemories();
     renderVotes();
+    renderPreferences();
   }
 
   async function submit(action, values) {
     if (demo) {
       if (action === "vote") {
         data.votes.push({ item: values.item, name: values.name });
-        localStorage.setItem(demoKey, JSON.stringify({ votes: data.votes, memories: data.memories }));
+        try {
+          saveDemoData();
+        } catch (error) {
+          data.votes.pop();
+          throw error;
+        }
       }
       return { message: action === "vote" ? "Demo vote saved in this browser only." : "Demo only: your response was not sent or saved. Connect Google Sheets to collect responses." };
     }
     return request({ action, ...values });
+  }
+
+  function attachPreferenceForm() {
+    const form = $("#food-preference-form");
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      const status = $(".form-status", form);
+      const diet = new FormData(form).get("diet");
+      if (!data.preferences || !["veg", "non-veg"].includes(diet)) {
+        status.textContent = "Please choose a food preference when counts are available.";
+        return;
+      }
+      preferenceSubmitting = true;
+      renderPreferences();
+      status.textContent = "Saving...";
+      try {
+        if (demo) {
+          const previous = data.preferences;
+          data.preferences = { ...previous, [diet === "veg" ? "veg" : "nonVeg"]: previous[diet === "veg" ? "veg" : "nonVeg"] + 1 };
+          try {
+            saveDemoData();
+          } catch (error) {
+            data.preferences = previous;
+            throw error;
+          }
+          status.textContent = "Demo preference saved in this browser only.";
+        } else {
+          const result = await request({ action: "preference", diet });
+          if (!validPreferences(result.preferences)) {
+            data.preferences = null;
+            throw new Error("Your preference was saved, but the server returned invalid counts. Reload the page to check them.");
+          }
+          data.preferences = result.preferences;
+          status.textContent = result.message;
+        }
+        form.reset();
+      } catch (error) {
+        status.textContent = `Could not update counts: ${error.message}`;
+      } finally {
+        preferenceSubmitting = false;
+        renderPreferences();
+      }
+    });
   }
 
   function renderTable() {
@@ -474,11 +544,14 @@
     setupFeastPhotoCarousel();
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
+    attachPreferenceForm();
+    if (demo) $(".vote-foot").textContent = "Demo only: votes are saved in this browser and are not shared.";
     
     loadData().catch(error => {
       $("#friends-table").innerHTML = '<tr><td colspan="3">Could not load the friends list.</td></tr>';
       $("#memories-grid").innerHTML = '<p class="empty-state">Could not load memories.</p>';
       $("#vote-grid").innerHTML = '<p class="empty-state">Could not load voting results.</p>';
+      $("#food-preference-note").textContent = "Could not load food preference counts. Please refresh the page.";
       setupScrollReveal();
       notify(`Could not load reunion data: ${error.message}`);
     });

@@ -6,6 +6,8 @@ A responsive HTML, CSS, JavaScript and Bootstrap reunion website. It has a “Fr
 
 Open `index.html` in a browser, or serve this folder with a static web server. The first run is **demo mode**: a sample friends list appears, and votes and food preference counts are saved only in that browser; other submissions are not saved. Visitors do not share demo data. Clear the browser's site data to reset demo votes and preference counts.
 
+To share persistent counts between visitors, the organiser must complete the Google Sheets setup below and publish the site with its `apiUrl` configured. Demo votes and preferences remain in their original browser and are not transferred to the sheet. Shared counts are loaded when visitors open or reload the page; they are not updated automatically while the page stays open.
+
 ## Make it yours
 
 Edit `assets/js/config.js`:
