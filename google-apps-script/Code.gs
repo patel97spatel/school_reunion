@@ -1,11 +1,12 @@
 /*
- * Bind this script to your reunion spreadsheet. Run setupSheets once, then
+ * Bind this script to your reunion spreadsheet. Run setupSheets, then
  * deploy it as a web app that executes as you and is accessible to anyone.
  */
 const HEADERS = {
   Friends: ["name", "then", "now", "status", "photo", "approved"],
   Memories: ["type", "title", "name", "message", "url", "approved", "submittedAt"],
   Votes: ["item", "name", "submittedAt"],
+  Preferences: ["diet", "submittedAt"],
   Responses: ["name", "city", "interest", "opinion", "submittedAt"]
 };
 const MENU_ITEMS = ["rice", "dal", "chicken", "mutton", "paneer", "mushroom", "salad", "dahi-raita", "tomato-khatta", "papad", "pakhalbhat", "patal-puda", "alu-puda", "tea", "chaulbara", "chaulbar", "mudhi-mixture"];
@@ -57,6 +58,18 @@ function publicText(value) {
   return String(value == null ? "" : value);
 }
 
+function preferenceCounts() {
+  const spreadsheet = reunionSpreadsheet();
+  if (!spreadsheet.getSheetByName("Preferences")) return null;
+  const counts = { veg: 0, nonVeg: 0 };
+  rows("Preferences").forEach(function (row) {
+    const diet = String(row.diet).trim().toLowerCase();
+    if (diet === "veg") counts.veg++;
+    if (diet === "non-veg") counts.nonVeg++;
+  });
+  return counts;
+}
+
 function doGet() {
   try {
     const friends = rows("Friends").filter(function (row) { return approved(row.approved); }).map(function (row) {
@@ -70,7 +83,8 @@ function doGet() {
     const votes = rows("Votes").filter(function (row) { return MENU_ITEMS.indexOf(String(row.item)) !== -1; }).map(function (row) {
       return { item: publicText(row.item), name: publicText(row.name) };
     });
-    return json({ ok: true, friends: friends, memories: memories, votes: votes });
+    const preferences = preferenceCounts();
+    return json({ ok: true, friends: friends, memories: memories, votes: votes, preferences: preferences });
   } catch (error) {
     console.error(error);
     return json({ ok: false, error: "Could not read the spreadsheet. Ask the organiser to check the setup." });
@@ -94,7 +108,7 @@ function doPost(event) {
   try {
     if (!event || !event.postData || !event.postData.contents) throw new Error("Missing submission.");
     const request = JSON.parse(event.postData.contents);
-    const name = field(request.name, "Name", 80, true);
+    const name = request.action === "preference" ? "" : field(request.name, "Name", 80, true);
     let sheetName;
     let values;
     let message;
@@ -103,6 +117,12 @@ function doPost(event) {
       sheetName = "Votes";
       values = [request.item, name, new Date()];
       message = "Your vote has been recorded!";
+    } else if (request.action === "preference") {
+      const diet = field(request.diet, "Food preference", 10, true);
+      if (["veg", "non-veg"].indexOf(diet) === -1) throw new Error("Please choose veg or non-veg.");
+      sheetName = "Preferences";
+      values = [diet, new Date()];
+      message = "Your food preference has been counted.";
     } else if (request.action === "rsvp") {
       const interest = field(request.interest, "Interest", 80, true);
       if (["Yes, absolutely!", "Maybe, keep me posted", "Not this time"].indexOf(interest) === -1) throw new Error("Please choose an interest option.");
@@ -121,6 +141,9 @@ function doPost(event) {
     const sheet = reunionSpreadsheet().getSheetByName(sheetName);
     if (!sheet) throw new Error("The spreadsheet is not set up.");
     sheet.appendRow(values);
+    if (request.action === "preference") {
+      return json({ ok: true, message: message, preferences: preferenceCounts() });
+    }
     return json({ ok: true, message: message });
   } catch (error) {
     console.error(error);

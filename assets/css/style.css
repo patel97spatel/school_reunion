@@ -115,12 +115,38 @@
 .feast-rsvp-fields label{margin-top:8px}
 .feast-rsvp-fields .privacy-note{margin:8px 0}
 .feast-rsvp-fields .form-status{color:var(--ink)}
+.food-preference-section{padding:24px 0 28px;background-image:linear-gradient(110deg,#f7f4e94d,#f7f4e91a),url("../images/food-preference-background.jpeg");background-position:center,center 78%;background-size:cover;background-repeat:no-repeat}
+.food-preference-section .section-label{margin-bottom:14px}
+.food-preference-panel{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:center;gap:clamp(20px,3vw,40px);max-width:1060px;margin:auto;padding:clamp(18px,2vw,24px);border:1px solid #e8dfc7;border-radius:5px;background:#fbfaf4c7;box-shadow:0 16px 42px #273c2b12}
+.food-preference-copy .kicker{margin-bottom:8px}
+.food-preference-copy h2{margin:0 0 8px;font:600 clamp(30px,3vw,40px)/1.08 var(--heading);letter-spacing:-1.5px}
+.food-preference-copy .section-copy{max-width:360px;margin:0;font-size:12px;line-height:1.55}
+.food-preference-form{min-width:0}
+.food-preference-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 9px;padding:0;border:0}
+.food-preference-options legend{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.food-preference-option{position:relative;display:block;margin:0;cursor:pointer}
+.food-preference-option input{position:absolute;width:1px;height:1px;margin:0;opacity:0}
+.food-preference-option-content{display:flex;align-items:center;gap:7px;min-height:54px;padding:8px;border:1px solid #dfe3d5;border-radius:4px;background:#fff;transition:border-color .2s,background .2s,box-shadow .2s}
+.food-preference-option input:checked+.food-preference-option-content{border-color:#778c58;background:#f0f3e7;box-shadow:0 0 0 2px #778c5820}
+.food-preference-option input:focus-visible+.food-preference-option-content{outline:2px solid #a8c367;outline-offset:2px}
+.food-preference-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:50%;background:#edf1e2;font-size:15px}
+.food-preference-option-content strong,.food-preference-option-content small{display:block}
+.food-preference-option-content strong{font:600 11px/1.3 var(--heading)}
+.food-preference-option-content small{margin-top:2px;color:#7e897c;font-size:8px}
+.food-preference-count{margin-left:auto;color:#30483a;font:700 20px/1 var(--heading)}
+.food-preference-form .food-preference-options{margin:0}
+.food-preference-form .privacy-note{min-height:0;margin:0 0 8px;font-size:9px;line-height:1.35}
+.food-preference-form .button{min-height:42px;padding:10px 14px;font-size:11px}
+.food-preference-form .form-status{grid-column:1/-1}
+.food-preference-form button:disabled{opacity:.55;cursor:not-allowed}
+.food-preference-repeat-note{margin:6px 0 0;color:#899487;font-size:8px;line-height:1.35}
 .rsvp-section{background:linear-gradient(125deg,#f7eee2,#f2e7d8 55%,#e7eee0)}
 .form-card{border:1px solid #ede9d9}
 .rsvp-note{margin-top:22px}
 .footer{padding-top:42px;background:linear-gradient(120deg,#192f29,#304b3d 65%,#4c5844)}
 .footer-top{padding-bottom:32px}
 @media(max-width:900px){.main-nav{gap:16px}.about-grid,.rsvp-grid{gap:35px}}
+@media(min-width:1000px){.food-preference-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,.42fr);align-items:center;gap:8px 12px}.food-preference-form .food-preference-options{grid-column:1}.food-preference-form .privacy-note,.food-preference-form .food-preference-repeat-note{grid-column:1/-1}.food-preference-form button[type=submit]{grid-column:2;grid-row:1}}
 @media(max-width:700px){
   .site-header{height:64px}.main-nav{top:64px}
   .hero{height:510px}.hero-slide{background-image:linear-gradient(90deg,rgba(24,40,28,.87),rgba(24,40,28,.6) 65%,rgba(24,40,28,.35)),linear-gradient(0deg,rgba(24,40,28,.5),transparent 52%),var(--hero-image);background-position:65% 40%}.hero-content{justify-content:center;padding-top:0;padding-bottom:45px}
@@ -164,6 +190,17 @@
   .feast-rsvp-copy h3{font-size:23px}
   .feast-rsvp-signature{font-size:20px}
   .feast-rsvp-form .form-row{grid-template-columns:1fr;gap:0}
+  .food-preference-section{padding:20px 0 24px}
+  .food-preference-section .section-label{margin-bottom:12px}
+  .food-preference-panel{grid-template-columns:1fr;gap:8px;padding:12px}
+  .food-preference-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .food-preference-form{display:grid;grid-template-columns:1fr;gap:0}
+  .food-preference-form .food-preference-options,.food-preference-form .privacy-note,.food-preference-form button[type=submit],.food-preference-form .food-preference-repeat-note{grid-column:1}
+  .food-preference-form button[type=submit]{grid-row:auto}
+  .food-preference-form .food-preference-options{margin:0 0 7px}
+  .food-preference-copy .kicker{display:none}
+  .food-preference-copy h2{margin-bottom:5px;font-size:28px;letter-spacing:-1px}
+  .food-preference-copy .section-copy{font-size:11px;line-height:1.4}
   .share-banner{padding:18px}
   .preferences-form{max-width:400px}
   .preferences-summary{grid-template-columns:1fr;gap:12px}

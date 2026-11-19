@@ -4,7 +4,7 @@ A responsive HTML, CSS, JavaScript and Bootstrap reunion website. It has a “Fr
 
 ## Try it
 
-Open `index.html` in a browser, or serve this folder with a static web server. The first run is **demo mode**: stock photos are placeholders, the friends list is empty, votes are saved only in that browser, and other submissions are not saved. Visitors do not share demo data. Clear the browser's site data to reset demo votes.
+Open `index.html` in a browser, or serve this folder with a static web server. The first run is **demo mode**: a sample friends list appears, and votes and food preference counts are saved only in that browser; other submissions are not saved. Visitors do not share demo data. Clear the browser's site data to reset demo votes and preference counts.
 
 ## Make it yours
 
@@ -40,15 +40,16 @@ Google Sheets stores shared data and can be downloaded as an Excel workbook. A G
 
 1. Create a new Google Sheet. Keep it private; do **not** publish or share the spreadsheet publicly.
 2. In that sheet, open **Extensions → Apps Script**. Replace the default code with `google-apps-script/Code.gs` and save.
-3. Select `setupSheets` and run it once. Authorise the requested permissions for your own spreadsheet. This creates `Friends`, `Memories`, `Votes` and `Responses` tabs and records the spreadsheet ID for the web app. If a tab already exists with different headers, rename it first; setup does not overwrite existing data.
+3. Select `setupSheets` and run it. Authorise the requested permissions for your own spreadsheet. This creates the `Friends`, `Memories`, `Votes`, `Preferences` and `Responses` tabs and records the spreadsheet ID for the web app. If you have already set up the spreadsheet, run `setupSheets` again after updating the script; it adds the `Preferences` tab without changing existing data. If a tab already exists with different headers, rename it first.
 4. Choose **Deploy → New deployment → Web app**. Set **Execute as: Me** and **Who has access: Anyone**. Deploy and copy the web app URL ending in `/exec`, not the `/dev` URL. Enter it as `apiUrl` in `assets/js/config.js`.
-5. Test using the hosted site: submit a response, cast a vote, and submit a message. Check the corresponding tabs. When editing Apps Script later, create a **new deployment version** via **Deploy → Manage deployments**, so the existing URL uses your updates.
+5. Test using the hosted site: cast a food vote, submit a food preference, and submit a message. Check the corresponding tabs. When editing Apps Script later, create a **new deployment version** via **Deploy → Manage deployments**, so the existing URL uses your updates.
 6. To export, open the spreadsheet and choose **File → Download → Microsoft Excel (.xlsx)**.
 
 If loading or submission fails, the site shows an error instead of switching to demo data. Check deployment access, the `/exec` URL, Google permissions and the Apps Script execution log. Apps Script and Google Sheets have free usage quotas and require internet access; the site does not provide unlimited storage or guaranteed availability.
 
 ### Populate and moderate
 
+- **Food preferences:** each veg/non-veg submission adds one count to the `Preferences` sheet. Repeated submissions count again; no names are stored. Food votes remain in the separate `Votes` sheet and are not cleared by preference submissions.
 - **Friends:** add one row per friend: `name`, `then` (e.g. a nickname or school memory), `now` (e.g. city), `status`, optional `photo` (a public HTTPS image URL shown as a circular profile photo), and `approved` = `YES`. Without a custom photo, the site assigns a consistent illustrated avatar from the roster's assigned avatar group. Only approved rows appear in the searchable list. Contact details are not shown or searchable.
 - **Memories:** submitted happy-wall notes arrive with `approved` = `NO`. Review them, then set `approved` to `YES` to publish. To add media received on WhatsApp, add a row with `type` = `photo` or `video`, a title, name, message and public HTTPS `url`, and `approved` = `YES`. Photo URLs must point directly to an image. Videos open as links in a new tab; use a video host that allows your friends to view it. Files are **not** uploaded to the spreadsheet or automatically transferred from WhatsApp.
 - **Votes:** every vote and the name entered are public on the website. Votes are sorted by count; selecting a dish opens the list of names. There is no login or enforced one-vote-per-person limit. Anyone can submit duplicate votes or another name, so results are informal, not tamper-proof. Remove inappropriate rows from the sheet.
