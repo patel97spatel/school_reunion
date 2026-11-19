@@ -274,6 +274,41 @@
     });
   }
 
+  function setupFeastPhotoCarousel() {
+    const main = $(".feast-rsvp-main");
+    const thumbnails = $$(".feast-rsvp-thumbnail");
+    if (!main || thumbnails.length === 0) return;
+
+    const photos = [
+      { src: main.getAttribute("src"), alt: main.alt },
+      ...thumbnails.map(button => ({ src: $("img", button).getAttribute("src"), alt: button.dataset.photoAlt }))
+    ];
+    let activePhoto = 0;
+    let changeTimer;
+    const showPhoto = index => {
+      activePhoto = (index + photos.length) % photos.length;
+      clearTimeout(changeTimer);
+      main.classList.add("is-changing");
+      changeTimer = setTimeout(() => {
+        main.src = photos[activePhoto].src;
+        main.alt = photos[activePhoto].alt;
+        thumbnails.forEach((button, position) => {
+          const photoIndex = (activePhoto + position + 1) % photos.length;
+          button.dataset.photoIndex = String(photoIndex);
+          button.dataset.photoAlt = photos[photoIndex].alt;
+          button.setAttribute("aria-label", `Show reunion photo ${photoIndex + 1} of ${photos.length}`);
+          $("img", button).src = photos[photoIndex].src;
+        });
+        window.requestAnimationFrame(() => main.classList.remove("is-changing"));
+      }, 180);
+    };
+
+    thumbnails.forEach(button => button.addEventListener("click", () => showPhoto(Number(button.dataset.photoIndex))));
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setInterval(() => showPhoto(activePhoto + 1), 3000);
+    }
+  }
+
   function showSlide(index) {
     selectedSlide = index;
     $$(".hero-slide").forEach((slide, i) => { slide.classList.toggle("is-active", i === index); slide.setAttribute("aria-hidden", String(i !== index)); });
@@ -340,6 +375,7 @@
     $(".footer-whatsapp").addEventListener("click", () => openWhatsApp());
     attachGroupRequestForm();
     attachFeastRsvpForm();
+    setupFeastPhotoCarousel();
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
     

@@ -20,6 +20,8 @@ The feast menu includes rice, dal, chicken, mutton, paneer, mushroom, salad, dah
 
 The supplied school-memory photos are stored in `assets/images` and used in the banner, class cards, story section and demo memories. Replace them with photos you have permission to use by updating their image paths and `alt` text in `index.html` and the demo-memory URLs in `assets/js/app.js`. Banner `--hero-image` paths are relative to `assets/css/style.css`, so images in `assets/images` use `../images/`. Use images with permission from everyone pictured. Google Fonts and Bootstrap are loaded from CDNs; the custom CSS supplies the site's core styling.
 
+The feast RSVP section uses supplied reunion photos from `assets/images/feast-rsvp-*.jpeg`. The main photo cycles every three seconds, and the thumbnails can be selected manually. Automatic rotation pauses when reduced motion is enabled.
+
 Banner photos are from Pexels, under the [Pexels license](https://www.pexels.com/license/):
 
 - [School friends](https://www.pexels.com/photo/happy-school-children-in-india-celebrating-together-40582287/) by Rohan Batra.

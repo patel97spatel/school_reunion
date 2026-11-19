@@ -90,20 +90,30 @@
 .vote-card button{border:0;color:#dfb767;padding:0;background:transparent;text-align:left;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .vote-card button span{margin-left:7px}
 .vote-foot{margin-top:14px}
-.feast-rsvp-section{background:linear-gradient(120deg,#f7f3e7,#e9efe1)}
+.feast-rsvp-section{padding:32px 0 36px;background:linear-gradient(120deg,#f7f3e7,#e9efe1)}
+.feast-rsvp-section .section-label{margin-bottom:22px}
 .feast-rsvp-feature{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);max-width:1060px;margin:auto;overflow:hidden;border:1px solid #e8dfc7;border-radius:5px;background:#f8f4e9;box-shadow:0 16px 42px #273c2b1c}
-.feast-rsvp-photo{position:relative;min-height:540px;overflow:hidden;background:#314439}
-.feast-rsvp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% center;animation:feast-photo-enter .9s cubic-bezier(.2,.8,.2,1) both}
+.feast-rsvp-photo{position:relative;min-height:420px;overflow:hidden;background:#314439}
+.feast-rsvp-photo .feast-rsvp-main{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 54%;transition:opacity .18s ease,transform .18s ease;animation:feast-photo-enter .9s cubic-bezier(.2,.8,.2,1)}
+.feast-rsvp-photo .feast-rsvp-main.is-changing{opacity:.35;transform:scale(1.02)}
 .feast-rsvp-photo:after{position:absolute;inset:0;background:linear-gradient(0deg,#17291bcc,transparent 58%);content:""}
 .feast-rsvp-photo-note{position:absolute;z-index:1;left:28px;bottom:25px;color:#fff4d3;font-size:10px;font-weight:700;line-height:1.6;letter-spacing:.15em}
 .feast-rsvp-photo-note span{color:#e4c96e}
+.feast-rsvp-thumbnails{position:absolute;right:17px;bottom:18px;z-index:2;display:flex;gap:6px}
+.feast-rsvp-thumbnail{width:58px;height:58px;padding:0;overflow:hidden;border:3px solid #fff5df;border-radius:4px;background:#242320;box-shadow:0 4px 12px #0005;transition:transform .2s,opacity .2s}
+.feast-rsvp-thumbnail img{width:100%;height:100%;object-fit:cover;transition:opacity .18s}
+.feast-rsvp-thumbnail:hover{transform:translateY(-4px) scale(1.06)}
+.feast-rsvp-thumbnail:focus-visible{outline:2px solid #e4c96e;outline-offset:3px}
 @keyframes feast-photo-enter{from{opacity:.65;transform:scale(1.07)}to{opacity:1;transform:scale(1)}}
-.feast-rsvp-form{display:block;margin:0;padding:clamp(24px,4vw,48px);border:0;border-radius:0;background:#f8f4e9;color:var(--ink)}
+.feast-rsvp-form{display:block;margin:0;padding:clamp(20px,2.6vw,28px);border:0;border-radius:0;background:#f8f4e9;color:var(--ink)}
 .feast-rsvp-copy .kicker{color:#819151}
-.feast-rsvp-copy h3{margin:0 0 10px;font:600 clamp(28px,3vw,38px)/1.1 var(--heading);letter-spacing:-1px}
-.feast-rsvp-copy>p:last-child{max-width:390px;color:#6d7668;font-size:13px;line-height:1.65}
+.feast-rsvp-copy h3{margin:0 0 10px;font:600 clamp(28px,2.7vw,34px)/1.1 var(--heading);letter-spacing:-1px}
+.feast-rsvp-copy>p:not(.kicker):not(.feast-rsvp-recipient){max-width:390px;color:#6d7668;font-size:13px;line-height:1.65}
+.feast-rsvp-recipient{margin:8px 0 0;color:#6d7668;font-size:12px}
+.feast-rsvp-signature{display:inline-block;margin-left:4px;color:#778c58;font:700 22px/.9 'Caveat',cursive;transform:rotate(-4deg)}
 .feast-rsvp-fields{min-width:0}
-.feast-rsvp-fields .privacy-note{margin:14px 0}
+.feast-rsvp-fields label{margin-top:8px}
+.feast-rsvp-fields .privacy-note{margin:8px 0}
 .feast-rsvp-fields .form-status{color:var(--ink)}
 .rsvp-section{background:linear-gradient(125deg,#f7eee2,#f2e7d8 55%,#e7eee0)}
 .form-card{border:1px solid #ede9d9}
@@ -143,10 +153,16 @@
   .vote-count{padding:4px 6px;font-size:11px}
   .vote-card p{font-size:11px}
   .vote-card button{font-size:8px}
+  .feast-rsvp-section{padding:30px 0 34px}
+  .feast-rsvp-section .section-label{margin-bottom:20px}
   .feast-rsvp-feature{grid-template-columns:1fr}
-  .feast-rsvp-photo{min-height:250px}
+  .feast-rsvp-photo{min-height:220px}
+  .feast-rsvp-photo-note{left:16px;bottom:18px;font-size:8px}
+  .feast-rsvp-thumbnails{right:10px;bottom:12px;gap:4px}
+  .feast-rsvp-thumbnail{width:42px;height:42px;border-width:2px}
   .feast-rsvp-form{padding:20px}
   .feast-rsvp-copy h3{font-size:23px}
+  .feast-rsvp-signature{font-size:20px}
   .feast-rsvp-form .form-row{grid-template-columns:1fr;gap:0}
   .share-banner{padding:18px}
   .preferences-form{max-width:400px}
