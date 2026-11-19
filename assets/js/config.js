@@ -4,6 +4,6 @@ window.REUNION_CONFIG = {
   location: "Kharsal, Bhatli, Bargarh, Odisha",
   batch: "Our unforgettable batch",
   owner: "Sanjay.dev",
-  whatsapp: "918658102608",
+  whatsapp: "919556811679",
   apiUrl: ""
 };
