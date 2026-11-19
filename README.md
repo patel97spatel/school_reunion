@@ -12,7 +12,8 @@ Edit `assets/js/config.js`:
 
 - `school`, `location` and `batch`: your school names, location and batch details.
 - `owner`: your name, displayed beside the current year in the footer.
-- `whatsapp`: your WhatsApp number with country code and no `+`, spaces, or punctuation, e.g. `919876543210`. This example is not a real contact. The button opens WhatsApp with a message; visitors must attach files themselves. Without a number, the site displays a setup notice.
+- `whatsapp`: your WhatsApp number with country code and no `+`, spaces, or punctuation, e.g. `919876543210`. This example is not a real contact. The memory-sharing button and group-join form use this number.
+- `whatsappFeast`: an optional separate WhatsApp number in the same format for feast RSVPs. The feast RSVP section uses this number to open a prefilled message with the visitor's attendance and optional feedback. Requests are not stored by the site; the visitor must send the WhatsApp message. If unset, the feast RSVP form reports that WhatsApp is unavailable.
 - `apiUrl`: your deployed Google Apps Script web app URL, set up below.
 
 The feast menu includes rice, dal, chicken, mutton, paneer, mushroom, salad, dahi raita, tomato khatta, papad, Pakhalbhat, Tomato puda, Alu puda, tea, Chaulbar and Jhal Mudhi. To change the choices, update **both** `menu` in `assets/js/app.js` and `MENU_ITEMS` in `google-apps-script/Code.gs`, then redeploy the script. Existing votes use the item IDs, so keep IDs stable when renaming choices. Votes for the previous example menu remain in the sheet but are no longer shown or counted. If you have already deployed the backend, update its code and deploy a new version before accepting votes for the new menu.
@@ -49,7 +50,7 @@ If loading or submission fails, the site shows an error instead of switching to 
 - **Friends:** add one row per friend: `name`, `then` (e.g. a nickname or school memory), `now` (e.g. city), `status`, `photo` (unused by the current table), and `approved` = `YES`. Only approved rows appear in the searchable table.
 - **Memories:** submitted happy-wall notes arrive with `approved` = `NO`. Review them, then set `approved` to `YES` to publish. To add media received on WhatsApp, add a row with `type` = `photo` or `video`, a title, name, message and public HTTPS `url`, and `approved` = `YES`. Photo URLs must point directly to an image. Videos open as links in a new tab; use a video host that allows your friends to view it. Files are **not** uploaded to the spreadsheet or automatically transferred from WhatsApp.
 - **Votes:** every vote and the name entered are public on the website. Votes are sorted by count; selecting a dish opens the list of names. There is no login or enforced one-vote-per-person limit. Anyone can submit duplicate votes or another name, so results are informal, not tamper-proof. Remove inappropriate rows from the sheet.
-- **Responses:** reunion interest and opinions stay in the private sheet; they are not returned by the public API.
+- **Responses:** the current site no longer submits reunion responses to the sheet. Group-join requests are sent only when visitors send the prefilled WhatsApp message to the organiser.
 
 Only publish friends, names, photos and messages with the people involved's consent. The site and its public web app have no authentication, CAPTCHA or rate limiting: anyone with the URL can view published data and submit responses, and spam or quota exhaustion is possible. Review submissions regularly; don't collect sensitive information or use this setup for private or high-stakes voting.
 

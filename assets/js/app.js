@@ -230,14 +230,48 @@
     });
   }
 
-  function openWhatsApp() {
-    const number = String(config.whatsapp || "").replace(/\D/g, "");
+  function openWhatsApp(message, recipient) {
+    const number = String(recipient === undefined ? config.whatsapp : recipient || "").replace(/\D/g, "");
     if (!number) {
       notify("The organiser hasn't added a WhatsApp number yet. Please check back soon.");
-      return;
+      return false;
     }
-    const message = "Hi! I have a memory to share with the school reunion. I'll attach my photos, videos or documents here.";
-    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    const defaultMessage = "Hi! I have a memory to share with the school reunion. I'll attach my photos, videos or documents here.";
+    window.open(`https://wa.me/${number}?text=${encodeURIComponent(message || defaultMessage)}`, "_blank", "noopener,noreferrer");
+    return true;
+  }
+
+  function attachGroupRequestForm() {
+    const form = $("#group-request-form");
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const name = form.elements.name.value.trim();
+      const phone = form.elements.phone.value.trim();
+      const message = `Hi! Please add me to the school reunion WhatsApp group.\nName: ${name}\nPhone: ${phone}`;
+      const status = $(".form-status", form);
+      if (!openWhatsApp(message)) {
+        status.textContent = "WhatsApp is unavailable. Please contact the organiser another way.";
+        return;
+      }
+      status.textContent = "WhatsApp is ready with your request. Send the message there; an organiser will add you to the group.";
+    });
+  }
+
+  function attachFeastRsvpForm() {
+    const form = $("#feast-rsvp-form");
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const name = form.elements.name.value.trim();
+      const attendance = form.elements.attendance.value;
+      const feedback = form.elements.feedback.value.trim();
+      const message = `Feast RSVP\nName: ${name}\nAttendance: ${attendance}${feedback ? `\nFeedback: ${feedback}` : ""}`;
+      const status = $(".form-status", form);
+      if (!openWhatsApp(message, config.whatsappFeast)) {
+        status.textContent = "WhatsApp is unavailable. Please contact the organiser another way.";
+        return;
+      }
+      status.textContent = "WhatsApp is ready with your RSVP. Send the message there to share your response.";
+    });
   }
 
   function showSlide(index) {
@@ -249,6 +283,27 @@
   document.addEventListener("DOMContentLoaded", () => {
     $$("[data-setting]").forEach(element => { element.textContent = config[element.dataset.setting] || element.textContent; });
     $("#year").textContent = new Date().getFullYear();
+    const scrollPage = top => {
+      const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+      window.scrollTo({ top, behavior });
+    };
+    const scrollToggle = $("#scroll-toggle");
+    let scrollDestination = "bottom";
+    const updateScrollToggle = () => {
+      const midpoint = (document.documentElement.scrollHeight - window.innerHeight) / 2;
+      scrollDestination = window.scrollY < midpoint ? "bottom" : "top";
+      if (scrollToggle.dataset.destination === scrollDestination) return;
+      scrollToggle.dataset.destination = scrollDestination;
+      scrollToggle.textContent = scrollDestination === "bottom" ? "↓" : "↑";
+      scrollToggle.setAttribute("aria-label", `Go to ${scrollDestination}`);
+      scrollToggle.title = `Go to ${scrollDestination}`;
+    };
+    scrollToggle.addEventListener("click", () => {
+      scrollPage(scrollDestination === "bottom" ? document.documentElement.scrollHeight : 0);
+    });
+    window.addEventListener("scroll", updateScrollToggle, { passive: true });
+    window.addEventListener("resize", updateScrollToggle);
+    updateScrollToggle();
     $(".nav-toggle").addEventListener("click", event => {
       const open = $("#main-nav").classList.toggle("open");
       event.currentTarget.setAttribute("aria-expanded", String(open));
@@ -281,9 +336,10 @@
     $("#vote-grid").addEventListener("click", event => { const button = event.target.closest("[data-vote]"); if (button) showVotes(button.dataset.vote); });
     $$("[data-open]").forEach(button => button.addEventListener("click", () => document.getElementById(button.dataset.open).showModal()));
     $$(".close-modal").forEach(button => button.addEventListener("click", () => button.closest("dialog").close()));
-    $("#whatsapp-button").addEventListener("click", openWhatsApp);
-    $(".footer-whatsapp").addEventListener("click", openWhatsApp);
-    attachForm("#rsvp-form", "rsvp");
+    $("#whatsapp-button").addEventListener("click", () => openWhatsApp());
+    $(".footer-whatsapp").addEventListener("click", () => openWhatsApp());
+    attachGroupRequestForm();
+    attachFeastRsvpForm();
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
     

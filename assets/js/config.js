@@ -5,5 +5,6 @@ window.REUNION_CONFIG = {
   batch: "Our unforgettable batch",
   owner: "Sanjay.dev",
   whatsapp: "919556811679",
+  whatsappFeast: "918658102608",
   apiUrl: ""
 };

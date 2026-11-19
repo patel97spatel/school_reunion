@@ -90,6 +90,21 @@
 .vote-card button{border:0;color:#dfb767;padding:0;background:transparent;text-align:left;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .vote-card button span{margin-left:7px}
 .vote-foot{margin-top:14px}
+.feast-rsvp-section{background:linear-gradient(120deg,#f7f3e7,#e9efe1)}
+.feast-rsvp-feature{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);max-width:1060px;margin:auto;overflow:hidden;border:1px solid #e8dfc7;border-radius:5px;background:#f8f4e9;box-shadow:0 16px 42px #273c2b1c}
+.feast-rsvp-photo{position:relative;min-height:540px;overflow:hidden;background:#314439}
+.feast-rsvp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% center;animation:feast-photo-enter .9s cubic-bezier(.2,.8,.2,1) both}
+.feast-rsvp-photo:after{position:absolute;inset:0;background:linear-gradient(0deg,#17291bcc,transparent 58%);content:""}
+.feast-rsvp-photo-note{position:absolute;z-index:1;left:28px;bottom:25px;color:#fff4d3;font-size:10px;font-weight:700;line-height:1.6;letter-spacing:.15em}
+.feast-rsvp-photo-note span{color:#e4c96e}
+@keyframes feast-photo-enter{from{opacity:.65;transform:scale(1.07)}to{opacity:1;transform:scale(1)}}
+.feast-rsvp-form{display:block;margin:0;padding:clamp(24px,4vw,48px);border:0;border-radius:0;background:#f8f4e9;color:var(--ink)}
+.feast-rsvp-copy .kicker{color:#819151}
+.feast-rsvp-copy h3{margin:0 0 10px;font:600 clamp(28px,3vw,38px)/1.1 var(--heading);letter-spacing:-1px}
+.feast-rsvp-copy>p:last-child{max-width:390px;color:#6d7668;font-size:13px;line-height:1.65}
+.feast-rsvp-fields{min-width:0}
+.feast-rsvp-fields .privacy-note{margin:14px 0}
+.feast-rsvp-fields .form-status{color:var(--ink)}
 .rsvp-section{background:linear-gradient(125deg,#f7eee2,#f2e7d8 55%,#e7eee0)}
 .form-card{border:1px solid #ede9d9}
 .rsvp-note{margin-top:22px}
@@ -128,9 +143,21 @@
   .vote-count{padding:4px 6px;font-size:11px}
   .vote-card p{font-size:11px}
   .vote-card button{font-size:8px}
+  .feast-rsvp-feature{grid-template-columns:1fr}
+  .feast-rsvp-photo{min-height:250px}
+  .feast-rsvp-form{padding:20px}
+  .feast-rsvp-copy h3{font-size:23px}
+  .feast-rsvp-form .form-row{grid-template-columns:1fr;gap:0}
   .share-banner{padding:18px}
   .preferences-form{max-width:400px}
   .preferences-summary{grid-template-columns:1fr;gap:12px}
   .preferences-table-container{margin-top:30px}
 }
 @media(prefers-reduced-motion:reduce){.feast-intro>*{animation:none;opacity:1;transform:none;filter:none}}
+.page-scroll-controls{position:fixed;right:20px;bottom:24px;z-index:18;display:grid;gap:8px}
+.page-scroll-button{width:42px;height:42px;display:grid;place-items:center;border:1px solid #e4c96e88;border-radius:50%;background:#283c30;color:#f2d785;font-size:23px;line-height:1;box-shadow:0 4px 14px #0003;transition:background .2s,color .2s,transform .2s}
+.page-scroll-button:hover{background:#e4c96e;color:#283c30;transform:translateY(-2px)}
+.page-scroll-button:focus-visible{outline:2px solid #f4d781;outline-offset:3px}
+@media(max-width:700px){.page-scroll-controls{right:12px;bottom:14px}.page-scroll-button{width:38px;height:38px;font-size:21px}}
+.footer-mantra{padding:17px 20px;background:#e4c96e;color:#283c30;text-align:center}
+.footer-mantra p{margin:0;font:700 13px/1.4 var(--body);letter-spacing:.14em}
