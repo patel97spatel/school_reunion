@@ -16,7 +16,7 @@
     { id: "patal-puda", name: "Tomato puda", image: "assets/images/feast-tomato-puda.jpeg", imageAlt: "Tomatoes roasted over hot coals" },
     { id: "alu-puda", name: "Alu puda", image: "assets/images/feast-alu-puda.jpeg", imageAlt: "Potatoes roasting in hot coals" },
     { id: "tea", name: "Tea", image: "assets/images/feast-tea.jpeg", imageAlt: "Two glasses of hot tea" },
-    { id: "chaulbar", legacyIds: ["chaulbara"], name: "Chaulbara", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
+    { id: "chaulbara", name: "Chaulbara", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
     { id: "mudhi-mixture", name: "Jhal Mudhi", image: "assets/images/feast-jhal-mudhi.jpeg", imageAlt: "A bowl of Jhal Mudhi with vegetables and peanuts" }
   ];
   const friendAvatarPhotos = {
@@ -46,14 +46,13 @@
     "nandini jal": "Nandini II"
   };
   const demo = !config.apiUrl;
-  let preferencePollAvailable = demo;
   const demoKey = "backbench-club-demo-v5";
   const sampleMemories = [
     { type: "photo", title: "The days we'll never forget", name: "The gang", message: "Here's to the people who made the ordinary days extraordinary.", url: "assets/images/friends-running.jpg" },
     { type: "photo", title: "Together is our favourite place", name: "The gang", message: "A little reminder to make time for the people who feel like home.", url: "assets/images/school-cricket.jpg" },
     { type: "note", title: "A note to the old gang", name: "The happy wall", message: "No matter how much time passes, good friends always pick up right where they left off.", url: "" }
   ];
-  let data = { friends: [], memories: [], votes: [], preferences: { veg: 0, nonVeg: 0 } };
+  let data = { friends: [], memories: [], votes: [] };
   let activeFilter = "all";
   let selectedSlide = 0;
   let currentPage = 1;
@@ -64,7 +63,6 @@
   const scrollRevealSelector = [
     ".hero-content > *", ".hero-stamp", ".reunion-quote", ".school-strip > *",
     ".feast-rsvp-section .section-label", ".feast-rsvp-feature",
-    ".food-preference-section .section-label", ".food-preference-panel > *", ".food-preference-option",
     ".about-section .section-label", ".about-grid > *",
     ".friends-section .section-label", ".friends-section .section-heading",
     ".class-grid .friend-card", ".class-photo-note", ".directory",
@@ -82,9 +80,6 @@
       return url.protocol === "https:" ? url.href : "";
     } catch { return ""; }
   };
-  const validPreferenceCounts = preferences => Boolean(preferences
-    && Number.isSafeInteger(preferences.veg) && preferences.veg >= 0
-    && Number.isSafeInteger(preferences.nonVeg) && preferences.nonVeg >= 0);
   const friendName = value => {
     const name = String(value || "Friend").trim().replace(/\s+/g, " ");
     return legacyFriendNames[name.toLowerCase()] || name;
@@ -169,22 +164,11 @@
         { srNo: 37, name: "Parbati" },
         { srNo: 38, name: "Tribhuban" }
       ];
-      return { friends: defaultFriends, memories: sampleMemories, votes: [], preferences: { veg: 0, nonVeg: 0 } };
+      return { friends: defaultFriends, memories: sampleMemories, votes: [] };
     }
     const parsed = JSON.parse(saved);
     if (!Array.isArray(parsed.votes) || !Array.isArray(parsed.memories)) throw new Error("Demo data is invalid.");
-    const preferences = parsed.preferences || { veg: 0, nonVeg: 0 };
-    if (!validPreferenceCounts(preferences)) throw new Error("Demo preference totals are invalid.");
-    return { friends: parsed.friends || [], memories: parsed.memories, votes: parsed.votes, preferences: preferences };
-  }
-
-  function saveDemoData() {
-    localStorage.setItem(demoKey, JSON.stringify({
-      friends: data.friends,
-      memories: data.memories,
-      votes: data.votes,
-      preferences: data.preferences
-    }));
+    return { friends: parsed.friends || [], memories: parsed.memories, votes: parsed.votes };
   }
 
   async function request(payload) {
@@ -210,59 +194,25 @@
   async function loadData() {
     if (demo) {
       data = getDemoData();
-      preferencePollAvailable = true;
     } else {
       const result = await request();
       if (!Array.isArray(result.friends) || !Array.isArray(result.memories) || !Array.isArray(result.votes)) throw new Error("The server returned an invalid response.");
-      const preferences = result.preferences;
-      preferencePollAvailable = validPreferenceCounts(preferences);
-      data = {
-        friends: result.friends,
-        memories: result.memories,
-        votes: result.votes,
-        preferences: preferencePollAvailable ? preferences : { veg: 0, nonVeg: 0 }
-      };
+      data = { friends: result.friends, memories: result.memories, votes: result.votes };
     }
     renderTable();
     renderMemories();
     renderVotes();
-    renderPreferenceCounts();
-    renderPreferenceAvailability();
   }
 
   async function submit(action, values) {
     if (demo) {
       if (action === "vote") {
         data.votes.push({ item: values.item, name: values.name });
-        saveDemoData();
-      } else if (action === "preference") {
-        if (values.diet !== "veg" && values.diet !== "non-veg") throw new Error("Please choose veg or non-veg.");
-        const key = values.diet === "veg" ? "veg" : "nonVeg";
-        data.preferences[key]++;
-        saveDemoData();
-        return { message: "Your preference was counted in this browser.", preferences: { ...data.preferences } };
+        localStorage.setItem(demoKey, JSON.stringify({ votes: data.votes, memories: data.memories }));
       }
       return { message: action === "vote" ? "Demo vote saved in this browser only." : "Demo only: your response was not sent or saved. Connect Google Sheets to collect responses." };
     }
     return request({ action, ...values });
-  }
-
-  function renderPreferenceCounts() {
-    $("#veg-count").textContent = String(data.preferences.veg);
-    $("#non-veg-count").textContent = String(data.preferences.nonVeg);
-  }
-
-  function renderPreferenceAvailability() {
-    const button = $('#food-preference-form button[type="submit"]');
-    const note = $("#food-preference-note");
-    button.disabled = !preferencePollAvailable;
-    if (demo) {
-      note.textContent = "Demo mode saves counts in this browser only. Connect the Google Sheets backend to share totals with everyone.";
-    } else if (preferencePollAvailable) {
-      note.textContent = "Counts are saved in the reunion spreadsheet. Every submission, including repeats, is counted.";
-    } else {
-      note.textContent = "Shared counts need the latest Apps Script deployment and a Preferences sheet. Update the script, run setupSheets, and redeploy.";
-    }
   }
 
   function renderTable() {
@@ -324,10 +274,7 @@
   }
 
   function renderVotes() {
-    const ranked = menu.map(item => {
-      const itemIds = [item.id, ...(item.legacyIds || [])];
-      return { ...item, count: data.votes.filter(vote => itemIds.includes(vote.item)).length };
-    }).sort((a, b) => b.count - a.count);
+    const ranked = menu.map(item => ({ ...item, count: data.votes.filter(vote => vote.item === item.id).length })).sort((a, b) => b.count - a.count);
     const grid = $("#vote-grid");
     unobserveScrollReveal(grid);
     grid.innerHTML = ranked.map(item => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-title-line"><h3>${escapeHtml(item.name)}</h3><span class="vote-leader" aria-hidden="true"></span><span class="vote-count">${item.count} ${item.count === 1 ? "vote" : "votes"}</span></div><p>${escapeHtml(item.description || item.imageAlt || `A favourite for the reunion feast.`)}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
@@ -339,8 +286,7 @@
     if (!item) return;
     $("#vote-modal-title").textContent = item.name;
     $('#vote-form [name="item"]').value = id;
-    const itemIds = [item.id, ...(item.legacyIds || [])];
-    const names = data.votes.filter(vote => itemIds.includes(vote.item)).map(vote => vote.name);
+    const names = data.votes.filter(vote => vote.item === id).map(vote => vote.name);
     $("#voter-list").innerHTML = names.length ? names.map(name => `<li>${escapeHtml(name)}</li>`).join("") : "<li>No votes yet. Be the first!</li>";
     $("#vote-form .form-status").textContent = "";
     $("#vote-modal").showModal();
@@ -423,34 +369,6 @@
     });
   }
 
-  function attachFoodPreferenceForm() {
-    const form = $("#food-preference-form");
-    form.addEventListener("submit", async event => {
-      event.preventDefault();
-      const status = $(".form-status", form);
-      const button = $('button[type="submit"]', form);
-      const diet = form.elements.diet.value;
-      if (!preferencePollAvailable) {
-        status.textContent = "Shared preference counts are unavailable until the spreadsheet setup is complete.";
-        return;
-      }
-      button.disabled = true;
-      status.textContent = "Saving your preference...";
-      try {
-        const result = await submit("preference", { diet: diet });
-        if (!validPreferenceCounts(result.preferences)) throw new Error("The server did not return updated preference totals.");
-        data.preferences = { veg: result.preferences.veg, nonVeg: result.preferences.nonVeg };
-        renderPreferenceCounts();
-        status.textContent = result.message;
-        form.reset();
-      } catch (error) {
-        status.textContent = `Could not save your preference: ${error.message}`;
-      } finally {
-        renderPreferenceAvailability();
-      }
-    });
-  }
-
   function setupFeastPhotoCarousel() {
     const main = $(".feast-rsvp-main");
     const thumbnails = $$(".feast-rsvp-thumbnail");
@@ -495,8 +413,6 @@
   document.addEventListener("DOMContentLoaded", () => {
     $$("[data-setting]").forEach(element => { element.textContent = config[element.dataset.setting] || element.textContent; });
     $("#year").textContent = new Date().getFullYear();
-    renderPreferenceCounts();
-    renderPreferenceAvailability();
     setupScrollReveal();
     const scrollPage = top => {
       const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
@@ -555,7 +471,6 @@
     $(".footer-whatsapp").addEventListener("click", () => openWhatsApp());
     attachGroupRequestForm();
     attachFeastRsvpForm();
-    attachFoodPreferenceForm();
     setupFeastPhotoCarousel();
     attachForm("#story-form", "story");
     attachForm("#vote-form", "vote");
