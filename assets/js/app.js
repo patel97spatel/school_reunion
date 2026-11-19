@@ -16,7 +16,7 @@
     { id: "patal-puda", name: "Tomato puda", image: "assets/images/feast-tomato-puda.jpeg", imageAlt: "Tomatoes roasted over hot coals" },
     { id: "alu-puda", name: "Alu puda", image: "assets/images/feast-alu-puda.jpeg", imageAlt: "Potatoes roasting in hot coals" },
     { id: "tea", name: "Tea", image: "assets/images/feast-tea.jpeg", imageAlt: "Two glasses of hot tea" },
-    { id: "chaulbar", name: "Chaulbar", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
+    { id: "chaulbar", legacyIds: ["chaulbara"], name: "Chaulbara", image: "assets/images/feast-chaulbar.jpeg", imageAlt: "Chaulbara served on a leaf plate" },
     { id: "mudhi-mixture", name: "Jhal Mudhi", image: "assets/images/feast-jhal-mudhi.jpeg", imageAlt: "A bowl of Jhal Mudhi with vegetables and peanuts" }
   ];
   const friendAvatarPhotos = {
@@ -56,9 +56,22 @@
   let activeFilter = "all";
   let selectedSlide = 0;
   let currentPage = 1;
+  let scrollRevealObserver = null;
   const itemsPerPage = 10;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const scrollRevealSelector = [
+    ".hero-content > *", ".hero-stamp", ".reunion-quote", ".school-strip > *",
+    ".feast-rsvp-section .section-label", ".feast-rsvp-feature",
+    ".about-section .section-label", ".about-grid > *",
+    ".friends-section .section-label", ".friends-section .section-heading",
+    ".class-grid .friend-card", ".class-photo-note", ".directory",
+    ".memories-section .section-label", ".memories-section .section-heading",
+    ".memory-tabs", ".memories-grid > *", ".share-banner",
+    ".vote-section .section-label", ".vote-heading > *", ".vote-grid > *", ".vote-foot",
+    ".rsvp-section .section-label", ".rsvp-grid > *",
+    ".footer-top > *", ".footer-bottom"
+  ].join(",");
   const escapeHtml = value => String(value == null ? "" : value).replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const safeUrl = value => {
     if (/^assets\/images\/[a-z0-9][a-z0-9._-]*$/i.test(value)) return value;
@@ -77,6 +90,29 @@
     const group = girlFriendNames.has(name.toLowerCase()) ? friendAvatarPhotos.girls : friendAvatarPhotos.boys;
     return group[hash % group.length];
   };
+  function setupScrollReveal() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) return;
+    if (!scrollRevealObserver) {
+      scrollRevealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.08 });
+    }
+    $$(scrollRevealSelector).forEach(element => {
+      if (element.classList.contains("scroll-reveal")) return;
+      const siblingIndex = Array.from(element.parentElement.children).indexOf(element);
+      element.style.setProperty("--reveal-delay", `${Math.min(siblingIndex, 4) * 70}ms`);
+      element.classList.add("scroll-reveal");
+      scrollRevealObserver.observe(element);
+    });
+  }
+  function unobserveScrollReveal(root) {
+    if (!scrollRevealObserver) return;
+    $$(".scroll-reveal", root).forEach(element => scrollRevealObserver.unobserve(element));
+  }
   const notify = message => {
     const notice = $("#notice");
     notice.textContent = message;
@@ -225,18 +261,27 @@
 
   function renderMemories() {
     const memories = data.memories.filter(memory => activeFilter === "all" || memory.type === activeFilter);
-    $("#memories-grid").innerHTML = memories.map(memory => {
+    const grid = $("#memories-grid");
+    unobserveScrollReveal(grid);
+    grid.innerHTML = memories.map(memory => {
       const url = safeUrl(memory.url);
       let visual = `<div class="note-memory">“${escapeHtml(memory.message || "Good friends, great memories.")}”</div>`;
       if (memory.type === "photo" && url) visual = `<div class="memory-image"><img src="${escapeHtml(url)}" alt="${escapeHtml(memory.title || "Shared memory")}" loading="lazy"><span class="memory-type">PHOTO ✳</span></div>`;
       if (memory.type === "video") visual = `<div class="note-memory">▶<br>Press play on a memory.</div>`;
       return `<article class="memory-card">${visual}<div class="memory-body"><small>${escapeHtml(memory.type === "note" ? "THE HAPPY WALL" : memory.type)} · ${escapeHtml(memory.name || "A friend")}</small><h3>${escapeHtml(memory.title || "A little memory")}</h3><p>${escapeHtml(memory.message)}</p>${memory.type === "video" && url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Watch video ↗</a>` : ""}</div></article>`;
     }).join("") || '<p class="empty-state">No memories here yet. Be the first to share one!</p>';
+    setupScrollReveal();
   }
 
   function renderVotes() {
-    const ranked = menu.map(item => ({ ...item, count: data.votes.filter(vote => vote.item === item.id).length })).sort((a, b) => b.count - a.count);
-    $("#vote-grid").innerHTML = ranked.map(item => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-title-line"><h3>${escapeHtml(item.name)}</h3><span class="vote-leader" aria-hidden="true"></span><span class="vote-count">${item.count} ${item.count === 1 ? "vote" : "votes"}</span></div><p>${escapeHtml(item.description || item.imageAlt || `A favourite for the reunion feast.`)}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
+    const ranked = menu.map(item => {
+      const itemIds = [item.id, ...(item.legacyIds || [])];
+      return { ...item, count: data.votes.filter(vote => itemIds.includes(vote.item)).length };
+    }).sort((a, b) => b.count - a.count);
+    const grid = $("#vote-grid");
+    unobserveScrollReveal(grid);
+    grid.innerHTML = ranked.map(item => `<article class="vote-card${item.image ? " has-image" : ""}">${item.image ? `<div class="vote-card-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || `${item.name} dish`)}" loading="lazy"></div>` : ""}<div class="vote-card-content"><div class="vote-title-line"><h3>${escapeHtml(item.name)}</h3><span class="vote-leader" aria-hidden="true"></span><span class="vote-count">${item.count} ${item.count === 1 ? "vote" : "votes"}</span></div><p>${escapeHtml(item.description || item.imageAlt || `A favourite for the reunion feast.`)}</p><button type="button" data-vote="${item.id}">See votes &amp; vote <span>↗</span></button></div></article>`).join("");
+    setupScrollReveal();
   }
 
   function showVotes(id) {
@@ -244,7 +289,8 @@
     if (!item) return;
     $("#vote-modal-title").textContent = item.name;
     $('#vote-form [name="item"]').value = id;
-    const names = data.votes.filter(vote => vote.item === id).map(vote => vote.name);
+    const itemIds = [item.id, ...(item.legacyIds || [])];
+    const names = data.votes.filter(vote => itemIds.includes(vote.item)).map(vote => vote.name);
     $("#voter-list").innerHTML = names.length ? names.map(name => `<li>${escapeHtml(name)}</li>`).join("") : "<li>No votes yet. Be the first!</li>";
     $("#vote-form .form-status").textContent = "";
     $("#vote-modal").showModal();
@@ -371,6 +417,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     $$("[data-setting]").forEach(element => { element.textContent = config[element.dataset.setting] || element.textContent; });
     $("#year").textContent = new Date().getFullYear();
+    setupScrollReveal();
     const scrollPage = top => {
       const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
       window.scrollTo({ top, behavior });
@@ -436,6 +483,7 @@
       $("#friends-table").innerHTML = '<tr><td colspan="3">Could not load the friends list.</td></tr>';
       $("#memories-grid").innerHTML = '<p class="empty-state">Could not load memories.</p>';
       $("#vote-grid").innerHTML = '<p class="empty-state">Could not load voting results.</p>';
+      setupScrollReveal();
       notify(`Could not load reunion data: ${error.message}`);
     });
   });

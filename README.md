@@ -1,6 +1,6 @@
 # Golden Days Forever — School Friends Reunion
 
-A responsive HTML, CSS, JavaScript and Bootstrap reunion website. It has a “Friends Forever” banner carousel, a static reunion quote, a warm gradient theme, school details, supplied school-memory photos, a searchable friends directory, photo/video and happy-wall filters, a feast vote with voter names, reunion opinions, and a WhatsApp sharing link.
+A responsive HTML, CSS, JavaScript and Bootstrap reunion website. It has a “Friends Forever” banner carousel, scroll-triggered entrance animations that respect reduced-motion settings, a static reunion quote, a warm gradient theme, school details, supplied school-memory photos, a searchable friends directory, photo/video and happy-wall filters, a feast vote with voter names, reunion opinions, and a WhatsApp sharing link.
 
 ## Try it
 
@@ -16,7 +16,7 @@ Edit `assets/js/config.js`:
 - `whatsappFeast`: an optional separate WhatsApp number in the same format for feast RSVPs. The feast RSVP section uses this number to open a prefilled message with the visitor's attendance and optional feedback. Requests are not stored by the site; the visitor must send the WhatsApp message. If unset, the feast RSVP form reports that WhatsApp is unavailable.
 - `apiUrl`: your deployed Google Apps Script web app URL, set up below.
 
-The feast menu includes rice, dal, chicken, mutton, paneer, mushroom, salad, dahi raita, tomato khatta, papad, Pakhalbhat, Tomato puda, Alu puda, tea, Chaulbar and Jhal Mudhi. To change the choices, update **both** `menu` in `assets/js/app.js` and `MENU_ITEMS` in `google-apps-script/Code.gs`, then redeploy the script. Existing votes use the item IDs, so keep IDs stable when renaming choices. Votes for the previous example menu remain in the sheet but are no longer shown or counted. If you have already deployed the backend, update its code and deploy a new version before accepting votes for the new menu.
+The feast menu includes rice, dal, chicken, mutton, paneer, mushroom, salad, dahi raita, tomato khatta, papad, Pakhalbhat, Tomato puda, Alu puda, tea, Chaulbara and Jhal Mudhi. To change the choices, update **both** `menu` in `assets/js/app.js` and `MENU_ITEMS` in `google-apps-script/Code.gs`, then redeploy the script. Existing votes use the item IDs, so keep IDs stable when renaming choices. Votes for the previous example menu remain in the sheet but are no longer shown or counted. If you have already deployed the backend, update its code and deploy a new version before accepting votes for the new menu.
 
 The supplied school-memory photos are stored in `assets/images` and used in the banner, class cards, story section and demo memories. Replace them with photos you have permission to use by updating their image paths and `alt` text in `index.html` and the demo-memory URLs in `assets/js/app.js`. Banner `--hero-image` paths are relative to `assets/css/style.css`, so images in `assets/images` use `../images/`. Use images with permission from everyone pictured. Google Fonts and Bootstrap are loaded from CDNs; the custom CSS supplies the site's core styling.
 
